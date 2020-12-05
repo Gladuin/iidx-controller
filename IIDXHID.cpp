@@ -2,6 +2,7 @@
 
 uint8_t extern led_pins[];
 uint8_t led_value[NUMBER_OF_LEDS];
+bool extern hid_lights;
 
 static const uint8_t PROGMEM hid_report[] = {
     0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
@@ -89,9 +90,11 @@ bool IIDXHID_::setup(USBSetup& setup) {
             if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == NUMBER_OF_LEDS) {
                 USB_RecvControl(led_value, NUMBER_OF_LEDS);
 
-                for (int i = 0; i < NUMBER_OF_LEDS; i++) {
-                    bool on = led_value[i] > 128;
-                    digitalWrite(led_pins[i], on);
+                if (hid_lights) {
+                    for (int i = 0; i < NUMBER_OF_LEDS; i++) {
+                        bool on = led_value[i] > 128;
+                        digitalWrite(led_pins[i], on);
+                    }
                 }
 
                 return true;

@@ -54,6 +54,10 @@ void setup() {
         reactive = true;
     }
 
+    if (digitalRead(button_pins[1]) == LOW) {
+        hid_lights = false;
+    }
+
     for (int i = 0; i < NUMBER_OF_LEDS; i++) {
         pinMode(led_pins[i], OUTPUT);
         digitalWrite(led_pins[i], HIGH);
