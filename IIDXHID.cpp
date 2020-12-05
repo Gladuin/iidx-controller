@@ -41,14 +41,6 @@ static const uint8_t PROGMEM hid_report[] = {
     0xc0                           // END_COLLECTION
 };
 
-
-void led_update() {
-    for (int i = 0; i < NUMBER_OF_LEDS; i++) {
-        bool on = led_value[i] > 128;
-        digitalWrite(leds[i], on);
-    }
-}
-
 IIDXHID_::IIDXHID_(void) : PluggableUSBModule(1, 1, epType) {
     epType[0] = EP_TYPE_INTERRUPT_IN;
     PluggableUSB().plug(this);
@@ -96,7 +88,12 @@ bool IIDXHID_::setup(USBSetup& setup) {
         if (request == HID_SET_REPORT) {
             if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == NUMBER_OF_LEDS) {
                 USB_RecvControl(led_value, NUMBER_OF_LEDS);
-                led_update();
+
+                for (int i = 0; i < NUMBER_OF_LEDS; i++) {
+                    bool on = led_value[i] > 128;
+                    digitalWrite(leds[i], on);
+                }
+
                 return true;
             }
         }
