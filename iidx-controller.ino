@@ -39,6 +39,9 @@ uint8_t button_pins[NUMBER_OF_BUTTONS] = {
 };
 
 Bounce buttons[NUMBER_OF_BUTTONS];
+unsigned long last_report = 0;
+bool hid_lights = true;
+bool reactive;
 
 void setup() {
     for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
@@ -46,7 +49,11 @@ void setup() {
         buttons[i].attach(button_pins[i], INPUT_PULLUP);
         buttons[i].interval(MS_DEBOUNCE);
     }
-    
+
+    if (digitalRead(button_pins[0]) == LOW) {
+        reactive = true;
+    }
+
     for (int i = 0; i < NUMBER_OF_LEDS; i++) {
         pinMode(led_pins[i], OUTPUT);
         digitalWrite(led_pins[i], HIGH);
@@ -59,8 +66,6 @@ void setup() {
     }
 }
 
-unsigned long last_report = 0;
-
 void loop() {
     uint32_t buttons_state = 0;
     
@@ -72,6 +77,10 @@ void loop() {
             buttons_state |= (uint32_t)1 << i;
         } else {
             buttons_state &= ~((uint32_t)1 << i);
+        }
+
+        if (reactive) {
+            digitalWrite(led_pins[i], !(button_value));
         }
     }
 
