@@ -1,6 +1,8 @@
 #include "HID.h"
 
 #define NUMBER_OF_LEDS 11
+#define NUMBER_OF_BUTTONS 11
+
 #define EPTYPE_DESCRIPTOR_SIZE uint8_t
 
 class IIDXHID_ : public PluggableUSBModule {

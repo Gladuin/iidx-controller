@@ -1,6 +1,6 @@
 #include "IIDXHID.h"
 
-uint8_t extern leds[];
+uint8_t extern led_pins[];
 uint8_t led_value[NUMBER_OF_LEDS];
 
 static const uint8_t PROGMEM hid_report[] = {
@@ -30,9 +30,9 @@ static const uint8_t PROGMEM hid_report[] = {
     0x81, 0x03,                    //   INPUT (Cnst,Var,Abs)
     0x05, 0x01,                    //   USAGE_PAGE (Generic Desktop)
     0x09, 0x01,                    //   USAGE (Pointer)
-    0x16, 0x98, 0xfe,              //   LOGICAL_MINIMUM (-360)
-    0x26, 0x68, 0x01,              //   LOGICAL_MAXIMUM (360)
-    0x75, 0x10,                    //   REPORT_SIZE (16)
+    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
+    0x26, 0xFF, 0x00,              //   LOGICAL_MAXIMUM (255)
+    0x75, 0x08,                    //   REPORT_SIZE (8)
     0x95, 0x01,                    //   REPORT_COUNT (1)
     0xa1, 0x00,                    //   COLLECTION (Physical)
     0x09, 0x30,                    //     USAGE (X)
@@ -91,7 +91,7 @@ bool IIDXHID_::setup(USBSetup& setup) {
 
                 for (int i = 0; i < NUMBER_OF_LEDS; i++) {
                     bool on = led_value[i] > 128;
-                    digitalWrite(leds[i], on);
+                    digitalWrite(led_pins[i], on);
                 }
 
                 return true;
@@ -111,11 +111,10 @@ uint8_t IIDXHID_::getShortName(char *name) {
 }
 
 int IIDXHID_::send_state(uint32_t button_state, int32_t turntable_state) {
-    uint8_t data[4];
+    uint8_t data[3];
 
-    data[0] = (uint8_t) 4;
-    data[1] = (uint8_t) (button_state & 0xFF);
-    data[2] = (uint8_t) (button_state >> 8) & 0xFF;
-    data[3] = (uint8_t) (turntable_state >> 2 & 0xFF);
-    return USB_Send(pluggedEndpoint | TRANSFER_RELEASE, data, 4);
+    data[0] = (uint8_t) (button_state & 0xFF);
+    data[1] = (uint8_t) (button_state >> 8) & 0xFF;
+    data[2] = (uint8_t) (turntable_state >> 2 & 0xFF);
+    return USB_Send(pluggedEndpoint | TRANSFER_RELEASE, data, 3);
 }
