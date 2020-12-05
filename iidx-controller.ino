@@ -19,6 +19,13 @@ uint8_t leds[NUMBER_OF_LEDS] = {
 void setup() {
     for (int i = 0; i < NUMBER_OF_LEDS; i++) {
         pinMode(leds[i], OUTPUT);
+        digitalWrite(leds[i], HIGH);
+    }
+
+    delay(200);
+
+    for (int i = 0; i < NUMBER_OF_LEDS; i++) {
+        digitalWrite(leds[i], LOW);
     }
 }
 
