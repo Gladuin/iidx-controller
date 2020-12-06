@@ -3,7 +3,7 @@ Software that enables you to create your own Arduino based beatmania IIDX contro
 
 # Features
  - HID lighting support (that works with btools and ttools).
- - Customisable sensitivity over HID for use with iidx >27 or your own custom program (more on this further down).
+ - Customisable sensitivity over HID for use with lightning mode or your own custom program (more on this further down).
  - Different lighting modes.
    - Reactive lighting mode when button 1 is pressed (LEDs light up as soon as the corresponding button is pressed).
    - Disable HID lighting mode when button 2 is pressed.
@@ -38,7 +38,10 @@ In spice, select `Beatmania IIDX` and go to the `Lights` tab. Scroll down until 
 
 ![Spice setup](spicecfg.png)
 
-You'll then be able to set the turntable sensitivity via the resistance menu on the subscreen in iidx >27.
+You'll then be able to set the turntable sensitivity via the resistance menu on the subscreen in iidx >27 (with lightning mode enabled).
+
+# Thanks
+Huge thanks to [CrazyRedMachine](https://github.com/CrazyRedMachine) for helping me out when I got stuck, and for his [SoundVoltexIO](https://github.com/CrazyRedMachine/SoundVoltexIO) repository.
 
 # Leonardo pinout
  
