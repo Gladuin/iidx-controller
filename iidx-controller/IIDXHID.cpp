@@ -5,7 +5,9 @@
 #define ENCODERMAX1 ENCODER_PPR & 0x00FF
 #define ENCODERMAX2 ENCODER_PPR >> 8
 
-uint8_t led_value[NUMBER_OF_LEDS];
+uint8_t led_value[NUMBER_OF_LEDS + 1];
+
+uint8_t extern tt_sensitivity[];
 uint8_t extern led_pins[];
 bool extern hid_lights;
 
@@ -13,6 +15,9 @@ static const uint8_t PROGMEM hid_report[] = {
     0x05, 0x01,                      // USAGE_PAGE (Generic Desktop)
     0x09, 0x05,                      // USAGE (Game Pad)
     0xa1, 0x01,                      // COLLECTION (Application)
+
+    /* LEDs */
+    0x85, 0x04,                      //   REPORT_ID (4)
     0x05, 0x0a,                      //   USAGE_PAGE (Ordinals)
     0x19, 0x01,                      //   USAGE_MINIMUM (Instance 1)
     0x29, NUMBER_OF_LEDS,            //   USAGE_MAXIMUM (Instance NUMBER_OF_LEDS)
@@ -21,19 +26,29 @@ static const uint8_t PROGMEM hid_report[] = {
     0x75, 0x08,                      //   REPORT_SIZE (8)
     0x95, NUMBER_OF_LEDS,            //   REPORT_COUNT (NUMBER_OF_LEDS)
     0x91, 0x02,                      //   OUTPUT (Data,Var,Abs)
+    /* LEDs END */
+
+    /* Buttons */
+    0x85, 0x05,                      //   REPORT_ID (5)
     0x05, 0x09,                      //   USAGE_PAGE (Button)
     0x19, 0x01,                      //   USAGE_MINIMUM (Button 1)
-    0x29, NUMBER_OF_BUTTONS,         //   USAGE_MAXIMUM (Button 11)
+    0x29, NUMBER_OF_BUTTONS,         //   USAGE_MAXIMUM (Button NUMBER_OF_BUTTONS)
     0x15, 0x00,                      //   LOGICAL_MINIMUM (0)
     0x25, 0x01,                      //   LOGICAL_MAXIMUM (1)
     0x75, 0x01,                      //   REPORT_SIZE (1)
-    0x95, NUMBER_OF_BUTTONS,         //   REPORT_COUNT (11)
+    0x95, NUMBER_OF_BUTTONS,         //   REPORT_COUNT (NUMBER_OF_BUTTONS)
     0x55, 0x00,                      //   UNIT_EXPONENT (0)
     0x65, 0x00,                      //   UNIT (None)
     0x81, 0x02,                      //   INPUT (Data,Var,Abs)
+    /* Buttons END */
+
+    /* Buttons padding */
     0x75, 0x01,                      //   REPORT_SIZE (1)
-    0x95, BUTTON_PADDING,            //   REPORT_COUNT (5)
+    0x95, BUTTON_PADDING,            //   REPORT_COUNT (BUTTON_PADDING)
     0x81, 0x03,                      //   INPUT (Cnst,Var,Abs)
+    /* Buttons padding END */
+
+    /* Encoder */
     0x05, 0x01,                      //   USAGE_PAGE (Generic Desktop)
     0x09, 0x01,                      //   USAGE (Pointer)
     0x15, 0x00,                      //   LOGICAL_MINIMUM (0)
@@ -44,6 +59,21 @@ static const uint8_t PROGMEM hid_report[] = {
     0x09, 0x30,                      //     USAGE (X)
     0x81, 0x02,                      //     INPUT (Data,Var,Abs)
     0xc0,                            //   END_COLLECTION
+    /* Encoder END*/
+
+    /* Turntable sensitivity input */
+    0x85, 0x06,                      //  REPORT_ID (6)
+    0x05, 0x0a,                      //  USAGE_PAGE (Ordinals)
+    0x19, 0x00,                      //  USAGE_MINIMUM (Instance Unused)
+    0x29, 0x00,                      //  USAGE_MAXIMUM (Instance Unused)
+    0x15, 0x00,                      //  LOGICAL_MINIMUM (0)
+    //0x26, 0xff, 0x00,                //  LOGICAL_MAXIMUM (255)
+    0x25, 0x09,                      //  LOGICAL_MAXIMUM (9)
+    0x75, 0x08,                      //  REPORT_SIZE (8)
+    0x95, 0x01,                      //  REPORT_COUNT (1)
+    0x91, 0x02,                      //  OUTPUT (Data,Var,Abs)
+    /* Turntable sensitivity input END */
+
     0xc0                             // END_COLLECTION
 };
 
@@ -92,14 +122,26 @@ bool IIDXHID_::setup(USBSetup& setup) {
 
     if (request_type == REQUEST_HOSTTODEVICE_CLASS_INTERFACE) {
         if (request == HID_SET_REPORT) {
-            if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == NUMBER_OF_LEDS) {
-                USB_RecvControl(led_value, NUMBER_OF_LEDS);
+            if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == (NUMBER_OF_LEDS + 1)) {
+                USB_RecvControl(led_value, (NUMBER_OF_LEDS + 1));
 
+                // Skip led_value[0], because this is the report id and not a LED value
                 if (hid_lights) {
-                    for (int i = 0; i < NUMBER_OF_LEDS; i++) {
-                        bool on = led_value[i] > 128;
-                        digitalWrite(led_pins[i], on);
+                    for (int i = 0; i < (NUMBER_OF_LEDS + 1); i++) {
+                        if (i != 0) {
+                            bool on = led_value[i] > 128;
+                            digitalWrite(led_pins[i - 1], on);
+                        }
                     }
+                }
+
+                return true;
+            }  else if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == 2) {
+                USB_RecvControl(tt_sensitivity, 2);
+
+                // Limit sensitivity to 9
+                if (tt_sensitivity[1] > 9) {
+                    tt_sensitivity[1] = 9;
                 }
 
                 return true;
@@ -119,12 +161,13 @@ uint8_t IIDXHID_::getShortName(char *name) {
 }
 
 int IIDXHID_::send_state(uint32_t button_state, int32_t turntable_state) {
-    uint8_t data[4];
+    uint8_t data[5];
 
-    data[0] = (uint8_t) (button_state & 0xFF);
-    data[1] = (uint8_t) (button_state >> 8) & 0xFF;
-    data[2] = (uint8_t) (turntable_state & 0xFF);
-    data[3] = (uint8_t) (turntable_state >> 8) & 0xFF;
+    data[0] = (uint8_t) 5;
+    data[1] = (uint8_t) (button_state & 0xFF);
+    data[2] = (uint8_t) (button_state >> 8) & 0xFF;
+    data[3] = (uint8_t) (turntable_state & 0xFF);
+    data[4] = (uint8_t) (turntable_state >> 8) & 0xFF;
 
-    return USB_Send(pluggedEndpoint | TRANSFER_RELEASE, data, 4);
+    return USB_Send(pluggedEndpoint | TRANSFER_RELEASE, data, 5);
 }

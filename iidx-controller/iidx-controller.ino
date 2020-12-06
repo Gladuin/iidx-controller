@@ -9,7 +9,7 @@
 
 IIDXHID_ IIDXHID;
 
-// Pins where the LEDs are connected to.
+// Pins where the LEDs are connected to
 uint8_t led_pins[NUMBER_OF_LEDS] = {
     2,    // button 1 led
     4,    // button 2 led
@@ -24,7 +24,7 @@ uint8_t led_pins[NUMBER_OF_LEDS] = {
     16    // misc button 4 led
 };
 
-// Pins where the buttons are connected to.
+// Pins where the buttons are connected to
 uint8_t button_pins[NUMBER_OF_BUTTONS] = {
     3,    // button 1
     5,    // button 2
@@ -39,18 +39,21 @@ uint8_t button_pins[NUMBER_OF_BUTTONS] = {
     17    // misc button 4
 };
 
-// Pins encoder is connected to.
+// Pins encoder is connected to
 uint8_t encoder_pins[2] = {
     0,    // green wire (a phase)
     1     // white wire (b phase)
 };
 
 Bounce buttons[NUMBER_OF_BUTTONS];
+
 uint32_t last_report = 0;
 
 uint32_t tt_pos;
 uint8_t encoder_curstate;
 uint8_t encoder_laststate;
+
+uint8_t tt_sensitivity[2];
 
 bool hid_lights = true;
 bool reactive;
@@ -96,6 +99,7 @@ void loop() {
         buttons[i].update();
         int button_value = buttons[i].read();
 
+        // Put button states into the buttons_state variable via bitwise operations
         if (button_value == LOW) {
             buttons_state |= (uint32_t)1 << i;
         } else {
@@ -107,12 +111,14 @@ void loop() {
         }
     }
 
+    // Limit the encoder from 0 to TT_MAX
     if (tt_pos >= TT_MAX) {
         tt_pos = 0;
     } else if (tt_pos <= 0) {
         tt_pos = TT_MAX;
     }
 
+    // Send turntable and button state every 1000 microseconds
     if (((micros() - last_report) >= REPORT_DELAY)) {
         IIDXHID.send_state(buttons_state, tt_pos);
         last_report = micros();
@@ -124,9 +130,9 @@ void update_encoder() {
 
     if (encoder_curstate != encoder_laststate && encoder_curstate == 1) {
         if (digitalRead(encoder_pins[1]) != encoder_curstate) {
-            tt_pos += 1;
+            tt_pos += (1 + tt_sensitivity[1]);
         } else {
-            tt_pos -= 1;
+            tt_pos -= (1 + tt_sensitivity[1]);
         }
     }
 

@@ -13,10 +13,11 @@ class IIDXHID_ : public PluggableUSBModule {
 
     protected:
         EPTYPE_DESCRIPTOR_SIZE epType[1];
+
         int getInterface(uint8_t* interface_count);
         int getDescriptor(USBSetup& setup);
-        bool setup(USBSetup& setup);
         uint8_t getShortName(char* name);
+        bool setup(USBSetup& setup);
 };
 
 extern IIDXHID_ IIDXHID;
