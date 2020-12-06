@@ -41,7 +41,7 @@ In spice, select `Beatmania IIDX` and go to the `Lights` tab. Scroll down until 
 You'll then be able to set the turntable sensitivity via the resistance menu on the subscreen in iidx >27 (with lightning mode enabled).
 
 # Thanks
-Huge thanks to [CrazyRedMachine](https://github.com/CrazyRedMachine) for helping me out when I got stuck, and for his [SoundVoltexIO](https://github.com/CrazyRedMachine/SoundVoltexIO) repository.
+Huge thanks to [CrazyRedMachine](https://github.com/CrazyRedMachine) for helping me out when I got stuck, and for their [SoundVoltexIO](https://github.com/CrazyRedMachine/SoundVoltexIO) repository.
 
 # Leonardo pinout
  
