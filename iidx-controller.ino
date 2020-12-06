@@ -5,6 +5,7 @@
 
 #define REPORT_DELAY 1000
 #define MS_DEBOUNCE 5
+#define TT_MAX ENCODER_PPR * 4
 
 IIDXHID_ IIDXHID;
 
@@ -38,8 +39,19 @@ uint8_t button_pins[NUMBER_OF_BUTTONS] = {
     17    // misc button 4
 };
 
+// Pins encoder is connected to.
+uint8_t encoder_pins[2] = {
+    0,    // green wire (a phase)
+    1     // white wire (b phase)
+};
+
 Bounce buttons[NUMBER_OF_BUTTONS];
-unsigned long last_report = 0;
+uint32_t last_report = 0;
+
+uint32_t tt_pos;
+uint8_t encoder_curstate;
+uint8_t encoder_laststate;
+
 bool hid_lights = true;
 bool reactive;
 
@@ -50,12 +62,9 @@ void setup() {
         buttons[i].interval(MS_DEBOUNCE);
     }
 
-    if (digitalRead(button_pins[0]) == LOW) {
-        reactive = true;
-    }
-
-    if (digitalRead(button_pins[1]) == LOW) {
-        hid_lights = false;
+    for (int i = 0; i < sizeof(encoder_pins); i++) {
+        pinMode(encoder_pins[i], INPUT_PULLUP);
+        attachInterrupt(digitalPinToInterrupt(encoder_pins[i]), update_encoder, CHANGE);
     }
 
     for (int i = 0; i < NUMBER_OF_LEDS; i++) {
@@ -68,15 +77,25 @@ void setup() {
     for (int i = 0; i < NUMBER_OF_LEDS; i++) {
         digitalWrite(led_pins[i], LOW);
     }
+
+    if (digitalRead(button_pins[0]) == LOW) {
+        reactive = true;
+    }
+
+    if (digitalRead(button_pins[1]) == LOW) {
+        hid_lights = false;
+    }
+
+    encoder_laststate = digitalRead(encoder_pins[0]);
 }
 
 void loop() {
     uint32_t buttons_state = 0;
-    
+
     for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
         buttons[i].update();
         int button_value = buttons[i].read();
-        
+
         if (button_value == LOW) {
             buttons_state |= (uint32_t)1 << i;
         } else {
@@ -88,8 +107,28 @@ void loop() {
         }
     }
 
+    if (tt_pos >= TT_MAX) {
+        tt_pos = 0;
+    } else if (tt_pos <= 0) {
+        tt_pos = TT_MAX;
+    }
+
     if (((micros() - last_report) >= REPORT_DELAY)) {
-        IIDXHID.send_state(buttons_state, 0);
+        IIDXHID.send_state(buttons_state, tt_pos);
         last_report = micros();
     }
+}
+
+void update_encoder() {
+    encoder_curstate = digitalRead(encoder_pins[0]);
+
+    if (encoder_curstate != encoder_laststate && encoder_curstate == 1) {
+        if (digitalRead(encoder_pins[1]) != encoder_curstate) {
+            tt_pos += 1;
+        } else {
+            tt_pos -= 1;
+        }
+    }
+
+    encoder_laststate = encoder_curstate;
 }

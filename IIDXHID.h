@@ -2,6 +2,7 @@
 
 #define NUMBER_OF_LEDS 11
 #define NUMBER_OF_BUTTONS 11
+#define ENCODER_PPR 500
 
 #define EPTYPE_DESCRIPTOR_SIZE uint8_t
 
