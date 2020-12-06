@@ -53,7 +53,7 @@ uint32_t tt_pos;
 uint8_t encoder_curstate;
 uint8_t encoder_laststate;
 
-uint8_t tt_sensitivity[2];
+uint8_t tt_sensitivity[2] = { 6, 3 };
 
 bool hid_lights = true;
 bool reactive;
