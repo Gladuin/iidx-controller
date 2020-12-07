@@ -7,7 +7,7 @@
 
 uint8_t led_value[NUMBER_OF_LEDS + 1];
 
-uint8_t extern tt_sensitivity[];
+uint8_t extern tt_sntvty[];
 uint8_t extern led_pins[];
 bool extern hid_lights;
 
@@ -136,11 +136,11 @@ bool IIDXHID_::setup(USBSetup& setup) {
 
                 return true;
             }  else if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == 2) {
-                USB_RecvControl(tt_sensitivity, 2);
+                USB_RecvControl(tt_sntvty, 2);
 
                 // Limit sensitivity to 9
-                if (tt_sensitivity[1] > 9) {
-                    tt_sensitivity[1] = 9;
+                if (tt_sntvty[1] > 9) {
+                    tt_sntvty[1] = 9;
                 }
 
                 return true;

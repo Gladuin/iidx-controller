@@ -53,7 +53,8 @@ uint32_t tt_pos;
 uint8_t encoder_curstate;
 uint8_t encoder_laststate;
 
-uint8_t tt_sensitivity[2] = { 6, 3 };
+uint8_t tt_sntvty[2] = { 0, 6 };
+uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
 bool hid_lights = true;
 bool reactive;
@@ -130,9 +131,9 @@ void update_encoder() {
 
     if (encoder_curstate != encoder_laststate && encoder_curstate == 1) {
         if (digitalRead(encoder_pins[1]) != encoder_curstate) {
-            tt_pos += (1 + tt_sensitivity[1]);
+            tt_pos += tt_lookup[tt_sntvty[1]];
         } else {
-            tt_pos -= (1 + tt_sensitivity[1]);
+            tt_pos -= tt_lookup[tt_sntvty[1]];
         }
     }
 

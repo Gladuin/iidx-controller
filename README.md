@@ -27,6 +27,7 @@ Encoder:
  
 Sensitivity:
  - If you want the default sensitivity to be something else than the current, change the second value of the array on line `56` of `iidx-controller/iidx-controller.ino`.
+ - You can change the 10 sensitivity values by changing the values in the array on line `57` of `iidx-controller/iidx-controller.ino`.
 
 Info:
  - Pinouts are available in `iidx-controller/iidx-controller.ino`, you can edit them there if necessary.
@@ -39,6 +40,8 @@ In spice, select `Beatmania IIDX` and go to the `Lights` tab. Scroll down until 
 ![Spice setup](spicecfg.png)
 
 You'll then be able to set the turntable sensitivity via the resistance menu on the subscreen in iidx >27 (with lightning mode enabled).
+
+_NOTE: I haven't actually been able to test this, since I have a 60hz screen and can't boot into lightning mode. Please report any issues you encounter in the issues section._
 
 # Thanks
 Huge thanks to [CrazyRedMachine](https://github.com/CrazyRedMachine) for helping me out when I got stuck, and for their [SoundVoltexIO](https://github.com/CrazyRedMachine/SoundVoltexIO) repository.
