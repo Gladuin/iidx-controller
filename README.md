@@ -1,5 +1,6 @@
 # iidx-controller
 Software that enables you to create your own Arduino based beatmania IIDX controller.
+***!!! CURRENTLY NOT WORKING WITH BTOOLS OR TTOOLS FOR REASONS, I'LL TRY TO FIX THIS ASAP !!!***
 
 # Features
  - HID lighting support (that works with btools and ttools).
@@ -20,6 +21,7 @@ Buttons:
 LEDs:
  - Positive terminal to corresponding pin.
  - Negative terminal to GND.
+ - If you have more than 16 LEDs, you'll need to edit the light handling code in `IIDXHID.h`
 
 Encoder:
  - The encoder's phase wires are ***REQUIRED*** to be connected to interrupt pins so it is advised to leave the encoder pins alone when editing the pinout. 
