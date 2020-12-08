@@ -175,5 +175,5 @@ int IIDXHID_::send_state(uint32_t button_state, int32_t turntable_state) {
     data[3] = (uint8_t) (turntable_state & 0xFF);
     data[4] = (uint8_t) (turntable_state >> 8) & 0xFF;
 
-    //return USB_Send(pluggedEndpoint | TRANSFER_RELEASE, data, 5);
+    return USB_Send(pluggedEndpoint | TRANSFER_RELEASE, data, 5);
 }
