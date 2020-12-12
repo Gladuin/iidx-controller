@@ -20,9 +20,9 @@ Buttons:
 LEDs:
  - Positive terminal to corresponding pin.
  - Negative terminal to GND.
- - If you have more than 11 LEDs, you'll need to add more instances to the report descriptor in `IIDXHID.cpp`. 
+ - If you have more than 11 LEDs, you'll need to add more instances to the report descriptor in `iidx-controller/IIDXHID.cpp`. 
    - For example, if you have 12 LEDs, you'd add `    0x09, 0x0c,                      //     USAGE (Instance 12)` after line `85`.
- - If you have more than 16 LEDs, you'll also need to edit the light handling code in `IIDXHID.cpp`
+ - If you have more than 16 LEDs, you'll also need to edit the light handling code in `iidx-controller/IIDXHID.cpp`
 
 Encoder:
  - The encoder's phase wires are ***REQUIRED*** to be connected to interrupt pins so it is advised to leave the encoder pins alone when editing the pinout. 
@@ -31,6 +31,7 @@ Encoder:
 Sensitivity:
  - If you want the default sensitivity to be something else than the current, change the second value of the array on line `56` of `iidx-controller/iidx-controller.ino`.
  - You can change the 10 sensitivity values by changing the values in the array on line `57` of `iidx-controller/iidx-controller.ino`.
+ - Sensitivity can be disabled by setting `NO_SENSITIVITY` to `1` in `iidx-controller/IIDXHID.h` on line `7`.
 
 Info:
  - Pinouts are available in `iidx-controller/iidx-controller.ino`, you can edit them there if necessary.
