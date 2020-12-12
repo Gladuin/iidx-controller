@@ -1,6 +1,5 @@
 # iidx-controller
 Software that enables you to create your own Arduino based beatmania IIDX controller.
-***!!! CURRENTLY NOT WORKING WITH BTOOLS OR TTOOLS FOR REASONS, I'LL TRY TO FIX THIS ASAP !!!***
 
 # Features
  - HID lighting support (that works with btools and ttools).
@@ -21,7 +20,9 @@ Buttons:
 LEDs:
  - Positive terminal to corresponding pin.
  - Negative terminal to GND.
- - If you have more than 16 LEDs, you'll need to edit the light handling code in `IIDXHID.h`
+ - If you have more than 11 LEDs, you'll need to add more instances to the report descriptor in `IIDXHID.cpp`. 
+   - For example, if you have 12 LEDs, you'd add `    0x09, 0x0c,                      //     USAGE (Instance 12)` after line `85`.
+ - If you have more than 16 LEDs, you'll also need to edit the light handling code in `IIDXHID.cpp`
 
 Encoder:
  - The encoder's phase wires are ***REQUIRED*** to be connected to interrupt pins so it is advised to leave the encoder pins alone when editing the pinout. 
@@ -37,7 +38,8 @@ Info:
  - Leonardo pinout (what the numbers in the code's pinout arrays mean) at the bottom of this page.
  
 # HID Sensitivity
-In spice, select `Beatmania IIDX` and go to the `Lights` tab. Scroll down until you see `Turntable P1 Resistance` and click the `Bind` button. For `Device` select your Arduino, and for `Light Control` select `Unknown (000a:0000) ...`.
+In spice, select `Beatmania IIDX` and go to the `Lights` tab. Scroll down until you see `Turntable P1 Resistance` and click the `Bind` button.  
+For `Device` select your Arduino, and for `Light Control` select `Unknown (000a:0000) ...`.
 
 ![Spice setup](spicecfg.png)
 
