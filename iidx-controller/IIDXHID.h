@@ -4,6 +4,8 @@
 #define NUMBER_OF_BUTTONS 11
 #define ENCODER_PPR 500
 
+#define NO_SENSITIVITY 1
+
 #define EPTYPE_DESCRIPTOR_SIZE uint8_t
 
 class IIDXHID_ : public PluggableUSBModule {

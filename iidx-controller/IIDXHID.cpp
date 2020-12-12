@@ -51,6 +51,7 @@ static const uint8_t PROGMEM hid_report[] = {
     0xc0,                            //   END_COLLECTION
     /* Encoder END*/
 
+    #if NO_SENSITIVITY == 0
     /* Turntable sensitivity input */
     0x05, 0x0a,                      //   USAGE_PAGE (Ordinals)
     0x15, 0x00,                      //   LOGICAL_MINIMUM (0)
@@ -62,6 +63,7 @@ static const uint8_t PROGMEM hid_report[] = {
     0x91, 0x02,                      //     OUTPUT (Data,Var,Abs)
     0xc0,                            //   END_COLLECTION
     /* Turntable sensitivity input END */
+    #endif
 
     0x85, 0x04,                      //   REPORT_ID (4)
 
@@ -161,7 +163,9 @@ bool IIDXHID_::setup(USBSetup& setup) {
                 }
 
                 return true;
-            } else if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == 2) {
+            } 
+            #if NO_SENSITIVITY == 0
+            else if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == 2) {
                 USB_RecvControl(tt_sntvty, 2);
 
                 // Limit sensitivity to 9
@@ -171,6 +175,7 @@ bool IIDXHID_::setup(USBSetup& setup) {
 
                 return true;
             }
+            #endif
         }
     }
 
