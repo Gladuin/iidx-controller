@@ -6,7 +6,7 @@
 #define ENCODERMAX1 ENCODER_PPR & 0x00FF
 #define ENCODERMAX2 ENCODER_PPR >> 8
 
-uint8_t led_value[2];
+uint8_t led_value[3];
 
 uint8_t extern tt_sntvty[];
 uint8_t extern led_pins[];
@@ -17,26 +17,9 @@ static const uint8_t PROGMEM hid_report[] = {
     0x09, 0x05,                      // USAGE (Game Pad)
     0xa1, 0x01,                      // COLLECTION (Application)
 
-    /* LEDs */
-    0x85, 0x04,                    //   REPORT_ID (4)
-    0x05, 0x0a,                    //   USAGE_PAGE (Ordinals)
-    0x19, 0x01,                    //   USAGE_MINIMUM (Instance 1)
-    0x29, NUMBER_OF_LEDS,          //   USAGE_MAXIMUM (Instance NUMBER_OF_LEDS)
-    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
-    0x25, 0x01,                    //   LOGICAL_MAXIMUM (1)
-    0x75, 0x01,                    //   REPORT_SIZE (1)
-    0x95, NUMBER_OF_LEDS,          //   REPORT_COUNT (NUMBER_OF_LEDS)
-    0x91, 0x02,                    //   OUTPUT (Data,Var,Abs)
-    /* LEDs END */
-
-    /* LEDs padding */
-    0x75, 0x01,                      //   REPORT_SIZE (1)
-    0x95, LED_PADDING,               //   REPORT_COUNT (LED_PADDING)
-    0x91, 0x03,                      //   OUTPUT (Cnst,Var,Abs)
-    /* LEDs padding END */
+    0x85, 0x05,                      //   REPORT_ID (5)
 
     /* Buttons */
-    0x85, 0x05,                      //   REPORT_ID (5)
     0x05, 0x09,                      //   USAGE_PAGE (Button)
     0x19, 0x01,                      //   USAGE_MINIMUM (Button 1)
     0x29, NUMBER_OF_BUTTONS,         //   USAGE_MAXIMUM (Button NUMBER_OF_BUTTONS)
@@ -69,19 +52,53 @@ static const uint8_t PROGMEM hid_report[] = {
     /* Encoder END*/
 
     /* Turntable sensitivity input */
-    0x85, 0x06,                      //  REPORT_ID (6)
-    0x05, 0x0a,                      //  USAGE_PAGE (Ordinals)
-    0x19, 0x00,                      //  USAGE_MINIMUM (Instance Unused)
-    0x29, 0x00,                      //  USAGE_MAXIMUM (Instance Unused)
-    0x15, 0x00,                      //  LOGICAL_MINIMUM (0)
-    0x25, 0x09,                      //  LOGICAL_MAXIMUM (9)
-    0x75, 0x08,                      //  REPORT_SIZE (8)
-    0x95, 0x01,                      //  REPORT_COUNT (1)
-    0x91, 0x02,                      //  OUTPUT (Data,Var,Abs)
+    0x05, 0x0a,                      //   USAGE_PAGE (Ordinals)
+    0x15, 0x00,                      //   LOGICAL_MINIMUM (0)
+    0x25, 0x09,                      //   LOGICAL_MAXIMUM (9)
+    0x75, 0x08,                      //   REPORT_SIZE (8)
+    0x95, 0x01,                      //   REPORT_COUNT (1)
+    0xa1, 0x02,                      //   COLLECTION (Logical)
+    0x09, 0x00,                      //     USAGE (Unused)
+    0x91, 0x02,                      //     OUTPUT (Data,Var,Abs)
+    0xc0,                            //   END_COLLECTION
     /* Turntable sensitivity input END */
+
+    0x85, 0x04,                      //   REPORT_ID (4)
+
+    /* LEDs begin */
+    0x05, 0x0a,                      //   USAGE_PAGE (Ordinals)
+    0x15, 0x00,                      //   LOGICAL_MINIMUM (0)
+    0x25, 0x01,                      //   LOGICAL_MAXIMUM (1)
+    0x75, 0x01,                      //   REPORT_SIZE (1)
+    0x95, 0x0b,                      //   REPORT_COUNT (11)
+    0xa1, 0x02,                      //   COLLECTION (Logical)
+    0x09, 0x01,                      //     USAGE (Instance 1)
+    0x09, 0x02,                      //     USAGE (Instance 2)
+    0x09, 0x03,                      //     USAGE (Instance 3)
+    0x09, 0x04,                      //     USAGE (Instance 4)
+    0x09, 0x05,                      //     USAGE (Instance 5)
+    0x09, 0x06,                      //     USAGE (Instance 6)
+    0x09, 0x07,                      //     USAGE (Instance 7)
+    0x09, 0x08,                      //     USAGE (Instance 8)
+    0x09, 0x09,                      //     USAGE (Instance 9)
+    0x09, 0x0a,                      //     USAGE (Instance 10)
+    0x09, 0x0b,                      //     USAGE (Instance 11)
+    0x91, 0x02,                      //     OUTPUT (Data,Var,Abs)
+    0xc0,                            //   END_COLLECTION
+    /* LEDs END */
+
+    /* LEDs padding */
+    0x75, 0x01,                      //   REPORT_SIZE (1)
+    0x95, LED_PADDING,               //   REPORT_COUNT (BUTTON_PADDING)
+    0x91, 0x03,                      //   OUTPUT (Cnst,Var,Abs)
+    /* LEDs padding END */
 
     0xc0                             // END_COLLECTION
 };
+
+void setup_leds_reportid() {
+
+}
 
 IIDXHID_::IIDXHID_(void) : PluggableUSBModule(1, 1, epType) {
     epType[0] = EP_TYPE_INTERRUPT_IN;
@@ -130,14 +147,16 @@ bool IIDXHID_::setup(USBSetup& setup) {
         if (request == HID_SET_REPORT) {
             if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == 3) {
                 USB_RecvControl(led_value, 3);
-                
-                for (int i = 0; i < NUMBER_OF_LEDS; i++) {
-                    if (led_value[1] >> i & 1) {
-                        digitalWrite(led_pins[i], HIGH);
-                    } else if (i >= 8 && led_value[2] >> (i - 8) & 1) {
-                        digitalWrite(led_pins[i], HIGH); 
-                    } else {
-                        digitalWrite(led_pins[i], LOW);
+
+                if (hid_lights) {
+                    for (int i = 0; i < NUMBER_OF_LEDS; i++) {
+                        if (led_value[1] >> i & 1) {
+                            digitalWrite(led_pins[i], HIGH);
+                        } else if (i >= 8 && led_value[2] >> (i - 8) & 1) {
+                            digitalWrite(led_pins[i], HIGH);
+                        } else {
+                            digitalWrite(led_pins[i], LOW);
+                        }
                     }
                 }
 

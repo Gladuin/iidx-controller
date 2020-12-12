@@ -59,8 +59,6 @@ uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 bool hid_lights = true;
 bool reactive;
 
-String a;
-
 void setup() {
     for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
         buttons[i] = Bounce();
@@ -120,7 +118,7 @@ void loop() {
     } else if (tt_pos <= 0) {
         tt_pos = TT_MAX;
     }
-    
+
     // Send turntable and button state every 1000 microseconds
     if (((micros() - last_report) >= REPORT_DELAY)) {
         IIDXHID.send_state(buttons_state, tt_pos);
