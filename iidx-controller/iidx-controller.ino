@@ -5,7 +5,6 @@
 
 #define REPORT_DELAY 1000
 #define MS_DEBOUNCE 5
-#define TT_MAX ENCODER_PPR * 4
 
 IIDXHID_ IIDXHID;
 
@@ -53,7 +52,7 @@ int32_t tt_pos;
 uint8_t encoder_curstate;
 uint8_t encoder_laststate;
 
-uint8_t tt_sensitivity[2] = { 0, 7 };
+uint8_t tt_sensitivity[2] = { 0, 9 };
 uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
 bool hid_lights = true;
@@ -112,11 +111,11 @@ void loop() {
         }
     }
 
-    // Limit the encoder from 0 to TT_MAX
-    if (tt_pos >= TT_MAX) {
+    // Limit the encoder from 0 to ENCODER_PPR
+    if (tt_pos >= ENCODER_PPR) {
         tt_pos = 1;
     } else if (tt_pos <= 0) {
-        tt_pos = TT_MAX - 1;
+        tt_pos = ENCODER_PPR - 1;
     }
 
     // Send turntable and button state every 1000 microseconds
