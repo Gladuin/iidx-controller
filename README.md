@@ -22,6 +22,8 @@ LEDs:
  - Negative terminal to GND.
  - If you have more than 11 LEDs, you'll need to add more instances to the report descriptor in `iidx-controller/IIDXHID.cpp`. 
    - For example, if you have 12 LEDs, you'd add `    0x09, 0x0c,                      //     USAGE (Instance 12)` after line `85`.
+ - If you have less than 11 LEDs, you'll need to remove instances from the report descriptor.
+ - Don't forget to change the pinout in `iidx-controller/iidx-controller.ino` if you change the LED count.
  - If you have more than 16 LEDs, you'll also need to edit the light handling code in `iidx-controller/IIDXHID.cpp`
 
 Encoder:
