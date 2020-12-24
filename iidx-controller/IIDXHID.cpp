@@ -72,7 +72,7 @@ static const uint8_t PROGMEM hid_report[] = {
     0x15, 0x00,                      //   LOGICAL_MINIMUM (0)
     0x25, 0x01,                      //   LOGICAL_MAXIMUM (1)
     0x75, 0x01,                      //   REPORT_SIZE (1)
-    0x95, NUMBER_OF_LEDS,            //   REPORT_COUNT (11)
+    0x95, NUMBER_OF_LEDS,            //   REPORT_COUNT (NUMBER_OF_LEDS)
     0xa1, 0x02,                      //   COLLECTION (Logical)
     0x09, 0x01,                      //     USAGE (Instance 1)
     0x09, 0x02,                      //     USAGE (Instance 2)
