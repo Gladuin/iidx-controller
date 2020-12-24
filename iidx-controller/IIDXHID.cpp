@@ -6,9 +6,9 @@
 #define ENCODERMAX1 ENCODER_PPR & 0x00FF
 #define ENCODERMAX2 ENCODER_PPR >> 8
 
-uint8_t led_value[3];
+uint8_t usb_data[128];
 
-uint8_t extern tt_sensitivity[];
+uint8_t extern tt_sensitivity;
 uint8_t extern led_pins[];
 bool extern hid_lights;
 
@@ -72,7 +72,7 @@ static const uint8_t PROGMEM hid_report[] = {
     0x15, 0x00,                      //   LOGICAL_MINIMUM (0)
     0x25, 0x01,                      //   LOGICAL_MAXIMUM (1)
     0x75, 0x01,                      //   REPORT_SIZE (1)
-    0x95, 0x0b,                      //   REPORT_COUNT (11)
+    0x95, NUMBER_OF_LEDS,            //   REPORT_COUNT (11)
     0xa1, 0x02,                      //   COLLECTION (Logical)
     0x09, 0x01,                      //     USAGE (Instance 1)
     0x09, 0x02,                      //     USAGE (Instance 2)
@@ -147,35 +147,35 @@ bool IIDXHID_::setup(USBSetup& setup) {
 
     if (request_type == REQUEST_HOSTTODEVICE_CLASS_INTERFACE) {
         if (request == HID_SET_REPORT) {
-            if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == 3) {
-                USB_RecvControl(led_value, 3);
+            if (setup.wValueH == HID_REPORT_TYPE_OUTPUT) {
+                USB_RecvControl(usb_data, setup.wLength);
 
-                if (hid_lights) {
-                    for (int i = 0; i < NUMBER_OF_LEDS; i++) {
-                        if (led_value[1] >> i & 1) {
-                            digitalWrite(led_pins[i], HIGH);
-                        } else if (i >= 8 && led_value[2] >> (i - 8) & 1) {
-                            digitalWrite(led_pins[i], HIGH);
-                        } else {
-                            digitalWrite(led_pins[i], LOW);
+                if (usb_data[0] == 4) {
+                    if (hid_lights) {
+                        for (int i = 0; i < NUMBER_OF_LEDS; i++) {
+                            if (usb_data[1] >> i & 1) {
+                                digitalWrite(led_pins[i], HIGH);
+                            } else if (i >= 8 && usb_data[2] >> (i - 8) & 1) {
+                                digitalWrite(led_pins[i], HIGH);
+                            } else {
+                                digitalWrite(led_pins[i], LOW);
+                            }
                         }
                     }
                 }
+                #if NO_SENSITIVITY == 0
+                else if (usb_data[0] == 5) {
+                    tt_sensitivity = usb_data[1];
 
-                return true;
-            } 
-            #if NO_SENSITIVITY == 0
-            else if (setup.wValueH == HID_REPORT_TYPE_OUTPUT && setup.wLength == 2) {
-                USB_RecvControl(tt_sensitivity, 2);
-
-                // Limit sensitivity to 9
-                if (tt_sensitivity[1] > 9) {
-                    tt_sensitivity[1] = 9;
+                    // Limit sensitivity to 9
+                    if (tt_sensitivity > 9) {
+                        tt_sensitivity = 9;
+                    }
                 }
+                #endif
 
                 return true;
             }
-            #endif
         }
     }
 
