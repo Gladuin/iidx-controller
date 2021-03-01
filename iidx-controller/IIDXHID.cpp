@@ -10,6 +10,7 @@ uint8_t usb_data[128];
 
 uint8_t extern tt_sensitivity;
 uint8_t extern led_pins[];
+bool extern hid_reactive_autoswitch;
 bool extern hid_lights;
 
 static const uint8_t PROGMEM hid_report[] = {
@@ -151,6 +152,9 @@ bool IIDXHID_::setup(USBSetup& setup) {
                 USB_RecvControl(usb_data, setup.wLength);
 
                 if (usb_data[0] == 4) {
+                    lastHidUpdate = millis();
+                    if (hid_reactive_autoswitch)
+                      hid_lights = true;
                     if (hid_lights) {
                         for (int i = 0; i < NUMBER_OF_LEDS; i++) {
                             if (usb_data[1] >> i & 1) {
@@ -190,6 +194,10 @@ uint8_t IIDXHID_::getShortName(char *name) {
     return 4;
 }
 
+unsigned long IIDXHID_::getLastHidUpdate(){
+  return lastHidUpdate;
+}
+    
 int IIDXHID_::send_state(uint32_t button_state, int32_t turntable_state) {
     uint8_t data[5];
 
