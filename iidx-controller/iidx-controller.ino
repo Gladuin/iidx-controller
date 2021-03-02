@@ -55,6 +55,7 @@ uint8_t encoder_laststate;
 uint8_t tt_sensitivity = 9;
 uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
+bool hid_reactive_autoswitch = true;
 bool hid_lights = true;
 bool reactive;
 
@@ -95,6 +96,20 @@ void setup() {
 void loop() {
     uint32_t buttons_state = 0;
 
+    /* mixed mode will behave sometimes like HID, sometimes like reactive */
+    if (hid_reactive_autoswitch){
+      if ((millis()-IIDXHID.getLastHidUpdate()) > 3000)
+      {
+        reactive = true;
+        hid_lights = false;
+      }
+      else
+      {
+        reactive = false;
+        hid_lights = true;
+      }
+    }
+      
     for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
         buttons[i].update();
         int button_value = buttons[i].read();

@@ -12,9 +12,11 @@ class IIDXHID_ : public PluggableUSBModule {
     public:
         IIDXHID_(void);
         int send_state(uint32_t button_state, int32_t turntable_state);
+        unsigned long getLastHidUpdate();
 
     protected:
         EPTYPE_DESCRIPTOR_SIZE epType[1];
+        unsigned long lastHidUpdate = 0;
 
         int getInterface(uint8_t* interface_count);
         int getDescriptor(USBSetup& setup);
