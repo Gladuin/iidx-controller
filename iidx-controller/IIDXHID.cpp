@@ -99,10 +99,6 @@ static const uint8_t PROGMEM hid_report[] = {
     0xc0                             // END_COLLECTION
 };
 
-void setup_leds_reportid() {
-
-}
-
 IIDXHID_::IIDXHID_(void) : PluggableUSBModule(1, 1, epType) {
     epType[0] = EP_TYPE_INTERRUPT_IN;
     PluggableUSB().plug(this);
