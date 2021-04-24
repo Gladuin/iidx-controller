@@ -57,7 +57,7 @@ uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
 bool hid_reactive_autoswitch = true;
 bool hid_lights = true;
-bool reactive;
+bool reactive = false;
 
 void setup() {
     for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
@@ -66,7 +66,7 @@ void setup() {
         buttons[i].interval(MS_DEBOUNCE);
     }
 
-    for (int i = 0; i < sizeof(encoder_pins); i++) {
+    for (uint8_t i = 0; i < sizeof(encoder_pins); i++) {
         pinMode(encoder_pins[i], INPUT_PULLUP);
         attachInterrupt(digitalPinToInterrupt(encoder_pins[i]), update_encoder, CHANGE);
     }
@@ -83,10 +83,12 @@ void setup() {
     }
 
     if (digitalRead(button_pins[0]) == LOW) {
+        hid_reactive_autoswitch = false;
         reactive = true;
     }
 
     if (digitalRead(button_pins[1]) == LOW) {
+        hid_reactive_autoswitch = false;
         hid_lights = false;
     }
 
@@ -120,12 +122,10 @@ void loop() {
         } else {
             buttons_state &= ~((uint32_t)1 << i);
         }
-
-        if (reactive) {
-            digitalWrite(led_pins[i], !(button_value));
-        }
     }
 
+    IIDXHID.write_lights(buttons_state, hid_lights, reactive);
+    
     // Limit the encoder from 0 to ENCODER_PPR
     if (tt_pos >= ENCODER_PPR) {
         tt_pos = 1;
@@ -138,6 +138,36 @@ void loop() {
         IIDXHID.send_state(buttons_state, tt_pos);
         last_report = micros();
     }
+
+          /* MANUAL LIGHTMODE UPDATE */
+  static bool modeChanged = false;      
+  if ( buttons_state & ((uint32_t)1 << (NUMBER_OF_BUTTONS-1)) ) {
+    if ( (buttons_state & 1) && (modeChanged == false)) {
+      modeChanged = true;
+      if (hid_reactive_autoswitch)
+      {
+        hid_reactive_autoswitch = false;
+        hid_lights = false;
+        reactive = true;  // 1 x x -> 0 0 1
+      }
+      else if (reactive && hid_lights)
+      {
+        hid_reactive_autoswitch = true;  // 0 1 1 - > 1 x x
+      }
+      else if (reactive)
+      {
+        reactive = false; 
+        hid_lights = true; // 0 0 1 -> 0 1 0
+      }
+      else
+      {
+        reactive = true; // 0 1 0 -> 0 1 1
+      }
+    }
+    else if (!(buttons_state&1)) {
+      modeChanged = false;
+    }
+  }
 }
 
 void update_encoder() {

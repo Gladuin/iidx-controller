@@ -11,6 +11,7 @@
 class IIDXHID_ : public PluggableUSBModule {
     public:
         IIDXHID_(void);
+        void write_lights(uint32_t button_state, bool hid, bool reactive);
         int send_state(uint32_t button_state, int32_t turntable_state);
         unsigned long getLastHidUpdate();
 
