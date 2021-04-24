@@ -98,18 +98,15 @@ void setup() {
 void loop() {
     uint32_t buttons_state = 0;
 
-    /* mixed mode will behave sometimes like HID, sometimes like reactive */
+    // Mixed mode will behave sometimes like HID, sometimes like reactive
     if (hid_reactive_autoswitch){
-      if ((millis()-IIDXHID.getLastHidUpdate()) > 3000)
-      {
-        reactive = true;
-        hid_lights = false;
-      }
-      else
-      {
-        reactive = false;
-        hid_lights = true;
-      }
+        if ((millis() - IIDXHID.getLastHidUpdate()) > 3000) {
+            reactive = true;
+            hid_lights = false;
+        } else {
+            reactive = false;
+            hid_lights = true;
+        }
     }
       
     for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
@@ -139,35 +136,27 @@ void loop() {
         last_report = micros();
     }
 
-          /* MANUAL LIGHTMODE UPDATE */
-  static bool modeChanged = false;      
-  if ( buttons_state & ((uint32_t)1 << (NUMBER_OF_BUTTONS-1)) ) {
-    if ( (buttons_state & 1) && (modeChanged == false)) {
-      modeChanged = true;
-      if (hid_reactive_autoswitch)
-      {
-        hid_reactive_autoswitch = false;
-        hid_lights = false;
-        reactive = true;  // 1 x x -> 0 0 1
-      }
-      else if (reactive && hid_lights)
-      {
-        hid_reactive_autoswitch = true;  // 0 1 1 - > 1 x x
-      }
-      else if (reactive)
-      {
-        reactive = false; 
-        hid_lights = true; // 0 0 1 -> 0 1 0
-      }
-      else
-      {
-        reactive = true; // 0 1 0 -> 0 1 1
-      }
+    // MANUAL LIGHTMODE UPDATE
+    static bool modeChanged = false;      
+    if (buttons_state & ((uint32_t)1 << (NUMBER_OF_BUTTONS-1))) {
+        if ((buttons_state & 1) && (modeChanged == false)) {
+            modeChanged = true;
+            if (hid_reactive_autoswitch) {
+                hid_reactive_autoswitch = false;
+                hid_lights = false;
+                reactive = true;  // 1 x x -> 0 0 1
+            } else if (reactive && hid_lights) {
+                hid_reactive_autoswitch = true;  // 0 1 1 - > 1 x x
+            } else if (reactive) {
+                reactive = false; 
+                hid_lights = true; // 0 0 1 -> 0 1 0
+            } else {
+                reactive = true; // 0 1 0 -> 0 1 1
+            }
+        } else if (!(buttons_state&1)) {
+            modeChanged = false;
+        }
     }
-    else if (!(buttons_state&1)) {
-      modeChanged = false;
-    }
-  }
 }
 
 void update_encoder() {
