@@ -4,7 +4,7 @@ Software that enables you to create your own Arduino based beatmania IIDX contro
 # Features
  - HID lighting support (that works with btools and ttools).
  - Customisable sensitivity over HID for use with lightning mode or your own custom program (more on this further down).
- - Different lighting modes (more info on this further down in the `Info` section.
+ - Different lighting modes (more info on this further down in the `Info` section).
 
 # Requirements
  - An Arduino Leonardo (technically compatible with any ATmega32U4 based board, but only tested with a Leonardo).
