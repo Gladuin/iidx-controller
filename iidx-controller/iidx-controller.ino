@@ -138,7 +138,7 @@ void loop() {
 
     // MANUAL LIGHTMODE UPDATE
     static bool modeChanged = false;      
-    if (buttons_state & ((uint32_t)1 << (NUMBER_OF_BUTTONS-1))) {
+    if (buttons_state & ((uint32_t)1 << (NUMBER_OF_BUTTONS - 1))) {
         if ((buttons_state & 1) && (modeChanged == false)) {
             modeChanged = true;
             if (hid_reactive_autoswitch) {
@@ -146,7 +146,7 @@ void loop() {
                 hid_lights = false;
                 reactive = true;  // 1 x x -> 0 0 1
             } else if (reactive && hid_lights) {
-                hid_reactive_autoswitch = true;  // 0 1 1 - > 1 x x
+                hid_reactive_autoswitch = true;  // 0 1 1 -> 1 x x
             } else if (reactive) {
                 reactive = false; 
                 hid_lights = true; // 0 0 1 -> 0 1 0
