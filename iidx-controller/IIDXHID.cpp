@@ -7,11 +7,11 @@
 #define ENCODERMAX2 ENCODER_PPR >> 8
 
 uint8_t usb_data[128];
+uint16_t lamp_hid_state = 0;
 
 uint8_t extern tt_sensitivity;
 uint8_t extern led_pins[];
 bool extern hid_reactive_autoswitch;
-bool extern hid_lights;
 
 static const uint8_t PROGMEM hid_report[] = {
     0x05, 0x01,                      // USAGE_PAGE (Generic Desktop)
@@ -152,20 +152,9 @@ bool IIDXHID_::setup(USBSetup& setup) {
                 USB_RecvControl(usb_data, setup.wLength);
 
                 if (usb_data[0] == 4) {
+                    lamp_hid_state = usb_data[2]<<8 | usb_data[1];
                     lastHidUpdate = millis();
-                    if (hid_reactive_autoswitch)
-                      hid_lights = true;
-                    if (hid_lights) {
-                        for (int i = 0; i < NUMBER_OF_LEDS; i++) {
-                            if (usb_data[1] >> i & 1) {
-                                digitalWrite(led_pins[i], HIGH);
-                            } else if (i >= 8 && usb_data[2] >> (i - 8) & 1) {
-                                digitalWrite(led_pins[i], HIGH);
-                            } else {
-                                digitalWrite(led_pins[i], LOW);
-                            }
-                        }
-                    }
+                    /* no need to write lights or update lightmode here (for autoswitch), main loop() will take care of it */
                 }
                 #if NO_SENSITIVITY == 0
                 else if (usb_data[0] == 5) {
@@ -197,7 +186,23 @@ uint8_t IIDXHID_::getShortName(char *name) {
 unsigned long IIDXHID_::getLastHidUpdate(){
   return lastHidUpdate;
 }
-    
+
+void IIDXHID_::write_lights(uint32_t button_state, bool hid, bool reactive) {
+  if (!reactive)
+  {
+    button_state = 0;
+  }
+  if (hid) 
+  {
+    button_state |= lamp_hid_state;
+  }
+  
+  for (int i=0; i<NUMBER_OF_LEDS; i++)
+  {
+    digitalWrite(led_pins[i], ((button_state>>i)&1));
+  }
+}
+  
 int IIDXHID_::send_state(uint32_t button_state, int32_t turntable_state) {
     uint8_t data[5];
 
