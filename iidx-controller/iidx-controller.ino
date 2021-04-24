@@ -82,6 +82,16 @@ void setup() {
         digitalWrite(led_pins[i], LOW);
     }
 
+    if (digitalRead(button_pins[0]) == LOW) {
+        hid_reactive_autoswitch = false;
+        reactive = true;
+    }
+
+    if (digitalRead(button_pins[1]) == LOW) {
+        hid_reactive_autoswitch = false;
+        hid_lights = false;
+    }
+
     encoder_laststate = digitalRead(encoder_pins[0]);
 }
 
