@@ -150,7 +150,7 @@ bool IIDXHID_::setup(USBSetup& setup) {
                 if (usb_data[0] == 4) {
                     lamp_hid_state = usb_data[2]<<8 | usb_data[1];
                     lastHidUpdate = millis();
-                    /* no need to write lights or update lightmode here (for autoswitch), main loop() will take care of it */
+                    // No need to write lights or update lightmode here (for autoswitch), main loop() will take care of it
                 }
                 #if NO_SENSITIVITY == 0
                 else if (usb_data[0] == 5) {
@@ -179,24 +179,22 @@ uint8_t IIDXHID_::getShortName(char *name) {
     return 4;
 }
 
-unsigned long IIDXHID_::getLastHidUpdate(){
-  return lastHidUpdate;
+unsigned long IIDXHID_::getLastHidUpdate() {
+    return lastHidUpdate;
 }
 
 void IIDXHID_::write_lights(uint32_t button_state, bool hid, bool reactive) {
-  if (!reactive)
-  {
-    button_state = 0;
-  }
-  if (hid) 
-  {
-    button_state |= lamp_hid_state;
-  }
+    if (!reactive) {
+        button_state = 0;
+    }
   
-  for (int i=0; i<NUMBER_OF_LEDS; i++)
-  {
-    digitalWrite(led_pins[i], ((button_state>>i)&1));
-  }
+    if (hid) {
+        button_state |= lamp_hid_state;
+    }
+  
+    for (int i=0; i<NUMBER_OF_LEDS; i++) {
+        digitalWrite(led_pins[i], ((button_state>>i)&1));
+    }
 }
   
 int IIDXHID_::send_state(uint32_t button_state, int32_t turntable_state) {
