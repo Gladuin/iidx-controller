@@ -7,6 +7,7 @@
 #define NO_SENSITIVITY 0
 
 #define EPTYPE_DESCRIPTOR_SIZE uint8_t
+#define STRING_ID_Base 4
 
 class IIDXHID_ : public PluggableUSBModule {
     public:
