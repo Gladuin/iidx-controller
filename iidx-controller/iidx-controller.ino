@@ -98,7 +98,7 @@ void loop() {
             hid_lights = true;
         }
     }
-      
+
     for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
         buttons[i].update();
         int button_value = buttons[i].read();
@@ -112,7 +112,7 @@ void loop() {
     }
 
     IIDXHID.write_lights(buttons_state, hid_lights, reactive);
-    
+
     // Limit the encoder from 0 to ENCODER_PPR
     if (tt_pos >= ENCODER_PPR) {
         tt_pos = 1;
@@ -127,7 +127,7 @@ void loop() {
     }
 
     // MANUAL LIGHTMODE UPDATE
-    static bool modeChanged = false;      
+    static bool modeChanged = false;
     if (buttons_state & ((uint32_t)1 << (NUMBER_OF_BUTTONS - 1))) {
         if ((buttons_state & 1) && (modeChanged == false)) {
             modeChanged = true;
@@ -138,7 +138,7 @@ void loop() {
             } else if (reactive && hid_lights) {
                 hid_reactive_autoswitch = true;  // 0 1 1 -> 1 x x
             } else if (reactive) {
-                reactive = false; 
+                reactive = false;
                 hid_lights = true; // 0 0 1 -> 0 1 0
             } else {
                 reactive = true; // 0 1 0 -> 0 1 1

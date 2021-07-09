@@ -13,6 +13,26 @@ uint8_t extern tt_sensitivity;
 uint8_t extern led_pins[];
 bool extern hid_reactive_autoswitch;
 
+/* HID descriptor strings */
+const char* const PROGMEM String_Manufacturer = "gladuin";
+const char* const PROGMEM String_Product = "IIDX Controller";
+
+const char* const PROGMEM LEDString_00 = "Button 1";
+const char* const PROGMEM LEDString_01 = "Button 2";
+const char* const PROGMEM LEDString_02 = "Button 3";
+const char* const PROGMEM LEDString_03 = "Button 4";
+const char* const PROGMEM LEDString_04 = "Button 5";
+const char* const PROGMEM LEDString_05 = "Button 6";
+const char* const PROGMEM LEDString_06 = "Button 7";
+const char* const PROGMEM LEDString_07 = "Misc button 1";
+const char* const PROGMEM LEDString_08 = "Misc button 2";
+const char* const PROGMEM LEDString_09 = "Misc button 3";
+const char* const PROGMEM LEDString_10 = "Misc button 4";
+const char* const PROGMEM TTString = "TT Sensitivity";
+
+const char* String_indiv[] = { LEDString_00, LEDString_01, LEDString_02, LEDString_03, LEDString_04, LEDString_05, LEDString_06, LEDString_07, LEDString_08, LEDString_09, LEDString_10, TTString };
+uint8_t STRING_ID_Count = 12;
+
 static const uint8_t PROGMEM hid_report[] = {
     0x05, 0x01,                      // USAGE_PAGE (Generic Desktop)
     0x09, 0x05,                      // USAGE (Game Pad)
@@ -102,8 +122,7 @@ static const uint8_t PROGMEM hid_report[] = {
     0xc0                             // END_COLLECTION
 };
 
-static bool SendControl(uint8_t d)
-{
+static bool SendControl(uint8_t d) {
   return USB_SendControl(0, &d, 1) == 1;
 }
 
@@ -121,26 +140,6 @@ static bool USB_SendStringDescriptor(const char *string_P, uint8_t string_len, u
         return true;
 }
 
-/* HID descriptor strings */
-const char* const PROGMEM String_Manufacturer = "gladuin";
-const char* const PROGMEM String_Product = "IIDX Controller";
-
-const char* const PROGMEM LEDString_00 = "Button 1";
-const char* const PROGMEM LEDString_01 = "Button 2";
-const char* const PROGMEM LEDString_02 = "Button 3";
-const char* const PROGMEM LEDString_03 = "Button 4";
-const char* const PROGMEM LEDString_04 = "Button 5";
-const char* const PROGMEM LEDString_05 = "Button 6";
-const char* const PROGMEM LEDString_06 = "Button 7";
-const char* const PROGMEM LEDString_07 = "Misc button 1";
-const char* const PROGMEM LEDString_08 = "Misc button 2";
-const char* const PROGMEM LEDString_09 = "Misc button 3";
-const char* const PROGMEM LEDString_10 = "Misc button 4";
-const char* const PROGMEM TTString = "TT Sensitivity";
-
-const char* String_indiv[] = {LEDString_00,LEDString_01,LEDString_02,LEDString_03,LEDString_04,LEDString_05,LEDString_06,LEDString_07,LEDString_08,LEDString_09,LEDString_10,TTString};
-uint8_t STRING_ID_Count = 12;
-
 IIDXHID_::IIDXHID_(void) : PluggableUSBModule(1, 1, epType) {
     epType[0] = EP_TYPE_INTERRUPT_IN;
     PluggableUSB().plug(this);
@@ -157,19 +156,18 @@ int IIDXHID_::getInterface(byte* interface_count) {
 }
 
 int IIDXHID_::getDescriptor(USBSetup& setup) {
-    
-    if (setup.wValueH == USB_STRING_DESCRIPTOR_TYPE) { 
+    if (setup.wValueH == USB_STRING_DESCRIPTOR_TYPE) {
         if (setup.wValueL == IPRODUCT) {
             return USB_SendStringDescriptor(String_Product, strlen(String_Product), 0);
-        } 
+        }
         else if (setup.wValueL == IMANUFACTURER) {
             return USB_SendStringDescriptor(String_Manufacturer, strlen(String_Manufacturer), 0);
-        } 
+        }
         else if(setup.wValueL >= STRING_ID_Base && setup.wValueL < (STRING_ID_Base + STRING_ID_Count)) {
             return USB_SendStringDescriptor(String_indiv[setup.wValueL - STRING_ID_Base], strlen(String_indiv[setup.wValueL - STRING_ID_Base]), 0);
-        }                       
+        }
     }
-      
+
     if (setup.bmRequestType != REQUEST_DEVICETOHOST_STANDARD_INTERFACE) {
         return 0;
     }
@@ -242,16 +240,16 @@ void IIDXHID_::write_lights(uint32_t button_state, bool hid, bool reactive) {
     if (!reactive) {
         button_state = 0;
     }
-  
+
     if (hid) {
         button_state |= lamp_hid_state;
     }
-  
+
     for (int i=0; i<NUMBER_OF_LEDS; i++) {
         digitalWrite(led_pins[i], ((button_state>>i)&1));
     }
 }
-  
+
 int IIDXHID_::send_state(uint32_t button_state, int32_t turntable_state) {
     uint8_t data[5];
 
