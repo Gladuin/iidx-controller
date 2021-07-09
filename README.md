@@ -17,11 +17,6 @@ Buttons:
 LEDs:
  - Positive terminal to corresponding pin.
  - Negative terminal to GND.
- - If you have more than 11 LEDs, you'll need to add more instances to the report descriptor in `iidx-controller/IIDXHID.cpp`. 
-   - For example, if you have 12 LEDs, you'd add `    0x09, 0x0c,                      //     USAGE (Instance 12)` after line `85`.
- - If you have less than 11 LEDs, you'll need to remove instances from the report descriptor.
- - Don't forget to change the pinout in `iidx-controller/iidx-controller.ino` if you change the LED count.
- - If you have more than 16 LEDs, you'll also need to edit the light handling code in `iidx-controller/IIDXHID.cpp`
 
 Encoder:
  - The encoder's phase wires are ***REQUIRED*** to be connected to interrupt pins so it is advised to leave the encoder pins alone when editing the pinout. 
@@ -29,7 +24,7 @@ Encoder:
  
 Sensitivity:
  - If you want the default sensitivity to be something else than the current, change the second value of the array on line `56` of `iidx-controller/iidx-controller.ino`.
- - You can change the 10 sensitivity values by changing the values in the array on line `57` of `iidx-controller/iidx-controller.ino`.
+ - You can change the 10 sensitivity values by changing the values in the array on line `56` of `iidx-controller/iidx-controller.ino`.
  - Sensitivity can be disabled by setting `NO_SENSITIVITY` to `1` in `iidx-controller/IIDXHID.h` on line `7`.
 
 LED mode switching:
@@ -47,7 +42,7 @@ Info:
 
 # HID Sensitivity
 In spice, select `Beatmania IIDX` and go to the `Lights` tab. Scroll down until you see `Turntable P1 Resistance` and click the `Bind` button.  
-For `Device` select your Arduino, and for `Light Control` select `Unknown (000a:0000) ...`.
+For `Device` select your Arduino, and for `Light Control` select `TT Sensitivity`.
 
 ![Spice setup](spicecfg.png)
 
