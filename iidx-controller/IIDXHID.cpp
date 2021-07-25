@@ -13,9 +13,17 @@ uint8_t extern tt_sensitivity;
 uint8_t extern led_pins[];
 bool extern hid_reactive_autoswitch;
 
-/* HID descriptor strings */
+/* HID string and device descriptor */
+#if KONAMI_SPOOF == 1
+const DeviceDescriptor PROGMEM USB_DeviceDescriptorIAD =
+  D_DEVICE(0xEF,0x02,0x01,64,0x1ccf,0x8048,0x100,IMANUFACTURER,IPRODUCT,ISERIAL,1);
+const char* const PROGMEM String_Manufacturer = "Konami Amusement";
+const char* const PROGMEM String_Product = "beatmania IIDX controller premium model";
+#else
 const char* const PROGMEM String_Manufacturer = "gladuin";
 const char* const PROGMEM String_Product = "IIDX Controller";
+#endif
+const char* const PROGMEM String_Serial = "IIDX";
 
 const char* const PROGMEM LEDString_00 = "Button 1";
 const char* const PROGMEM LEDString_01 = "Button 2";
@@ -35,7 +43,7 @@ uint8_t STRING_ID_Count = 12;
 
 static const uint8_t PROGMEM hid_report[] = {
     0x05, 0x01,                      // USAGE_PAGE (Generic Desktop)
-    0x09, 0x05,                      // USAGE (Game Pad)
+    0x09, 0x04,                      // USAGE (Joystick)
     0xa1, 0x01,                      // COLLECTION (Application)
 
     0x85, 0x05,                      //   REPORT_ID (5)
@@ -156,12 +164,20 @@ int IIDXHID_::getInterface(byte* interface_count) {
 }
 
 int IIDXHID_::getDescriptor(USBSetup& setup) {
+#if KONAMI_SPOOF == 1  
+    if(setup.wValueH == USB_DEVICE_DESCRIPTOR_TYPE) {
+        return USB_SendControl(TRANSFER_PGM, (const uint8_t*)&USB_DeviceDescriptorIAD, sizeof(USB_DeviceDescriptorIAD));
+    }
+#endif
     if (setup.wValueH == USB_STRING_DESCRIPTOR_TYPE) {
         if (setup.wValueL == IPRODUCT) {
             return USB_SendStringDescriptor(String_Product, strlen(String_Product), 0);
         }
         else if (setup.wValueL == IMANUFACTURER) {
             return USB_SendStringDescriptor(String_Manufacturer, strlen(String_Manufacturer), 0);
+        }
+        else if (setup.wValueL == ISERIAL) {
+            return USB_SendStringDescriptor(String_Serial, strlen(String_Serial), 0);
         }
         else if(setup.wValueL >= STRING_ID_Base && setup.wValueL < (STRING_ID_Base + STRING_ID_Count)) {
             return USB_SendStringDescriptor(String_indiv[setup.wValueL - STRING_ID_Base], strlen(String_indiv[setup.wValueL - STRING_ID_Base]), 0);
@@ -222,14 +238,6 @@ bool IIDXHID_::setup(USBSetup& setup) {
     }
 
     return false;
-}
-
-uint8_t IIDXHID_::getShortName(char *name) {
-    name[0] = 'I';
-    name[1] = 'I';
-    name[2] = 'D';
-    name[3] = 'X';
-    return 4;
 }
 
 unsigned long IIDXHID_::getLastHidUpdate() {

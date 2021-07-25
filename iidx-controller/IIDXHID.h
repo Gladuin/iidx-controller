@@ -6,6 +6,8 @@
 
 #define NO_SENSITIVITY 0
 
+#define KONAMI_SPOOF 1
+
 #define EPTYPE_DESCRIPTOR_SIZE uint8_t
 #define STRING_ID_Base 4
 
@@ -22,7 +24,6 @@ class IIDXHID_ : public PluggableUSBModule {
 
         int getInterface(uint8_t* interface_count);
         int getDescriptor(USBSetup& setup);
-        uint8_t getShortName(char* name);
         bool setup(USBSetup& setup);
 };
 
