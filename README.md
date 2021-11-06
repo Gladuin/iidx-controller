@@ -1,3 +1,8 @@
+# hey yo
+ - this branch uses [this](https://github.com/John-Lluch/Encoder)) library (timer-based interrupt, instead of pin change interrupt) for encoder
+	1. in other words, there is no need to put your encoder onto interrupt capable pins
+ - not tested, use with caution
+
 # iidx-controller
 Software that enables you to create your own Arduino based beatmania IIDX controller.
 
@@ -19,13 +24,14 @@ LEDs:
  - Negative terminal to GND.
 
 Encoder:
- - The encoder's phase wires are ***REQUIRED*** to be connected to interrupt pins so it is advised to leave the encoder pins alone when editing the pinout. 
+ - ~~The encoder's phase wires are ***REQUIRED*** to be connected to interrupt pins so it is advised to leave the encoder pins alone when editing the pinout. ~~
  - Set the PPR in `iidx-controller/IIDXHID.h`, line `5`.
  
 Sensitivity:
- - If you want the default sensitivity to be something else than the current, change the second value of the array on line `56` of `iidx-controller/iidx-controller.ino`.
- - You can change the 10 sensitivity values by changing the values in the array on line `56` of `iidx-controller/iidx-controller.ino`.
- - Sensitivity can be disabled by setting `NO_SENSITIVITY` to `1` in `iidx-controller/IIDXHID.h` on line `7`.
+ - ~~If you want the default sensitivity to be something else than the current, change the second value of the array on line `56` of `iidx-controller/iidx-controller.ino`.~~
+	1. moved to config.h
+ - ~~You can change the 10 sensitivity values by changing the values in the array on line `56` of `iidx-controller/iidx-controller.ino`.~~
+ - ~~Sensitivity can be disabled by setting `NO_SENSITIVITY` to `1` in `iidx-controller/IIDXHID.h` on line `7`.~~
 
 LED mode switching:
  - Hold the last button in the button array, and then tap the first button in the button array to switch modes.
@@ -36,7 +42,8 @@ LED mode switching:
    4. HID _and_ reactive
 
 Info:
- - Pinouts are available in `iidx-controller/iidx-controller.ino`, you can edit them there if necessary.
+ - ~~Pinouts are available in `iidx-controller/iidx-controller.ino`, you can edit them there if necessary.~~
+	1. moved to config.h
  - If changing the number of buttons / LEDs, change the value in `iidx-controller/IIDXHID.h` (line `3` and `4` respectively) to the new number of buttons / LEDs.
  - Leonardo pinout (what the numbers in the code's pinout arrays mean) at the bottom of this page.
 
