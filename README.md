@@ -1,4 +1,4 @@
-# hey yo
+# ey yo
  - this branch uses [this](https://github.com/John-Lluch/Encoder) library (timer-based interrupt, instead of pin change interrupt) for encoder
 	- in other words, there is no need to put your encoder onto interrupt capable pins
  - not tested, use with caution
@@ -28,12 +28,15 @@ Encoder:
  - Set the PPR in `iidx-controller/IIDXHID.h`, line `5`.
  
 Sensitivity:
- - If you want the default sensitivity to be something else than the current, change the ~~second value of the array on line `56` of `iidx-controller/iidx-controller.ino`~~.
-	- moved to config.h
+ - ~~If you want the default sensitivity to be something else than the current, change the second value of the array on line `56` of `iidx-controller/iidx-controller.ino`.~~
  - ~~You can change the 10 sensitivity values by changing the values in the array on line `56` of `iidx-controller/iidx-controller.ino`.~~
-	- there is no sensitivity_lookup anymore, higher the number, the more insensitive it is
  - ~~Sensitivity can be disabled by setting `NO_SENSITIVITY` to `1` in `iidx-controller/IIDXHID.h` on line `7`.~~
-	- i dunno if it still works
+ - Set it in Spice
+	- 9 is normal, 1 means 1 full turn IRL equals to 10 full turns in software
+ - Despite the name "Sensitivity", the value is from the "Turntable Resistence (or Turntable Weight)" setting found on lightning turntables, i.e. it has nothing to do with actual sensitivity
+ 
+Deadzone:
+ - configurable in config.h
 
 LED mode switching:
  - Hold the last button in the button array, and then tap the first button in the button array to switch modes.

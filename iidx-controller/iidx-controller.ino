@@ -17,6 +17,9 @@ Encoder encoder(encoder_pins[0], encoder_pins[1], 99);
 uint32_t last_report = 0;
 
 int32_t tt_pos;
+uint8_t tt_sensitivity = 9;
+uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+
 const int encoder_cooldown_const = 40;
 int encoder_cooldown = 0;
 int encoder_delta;
@@ -99,8 +102,8 @@ void loop() {
     encoder_cooldown--;
   }
   
-   if (encoder_delta >= tt_sensitivity || encoder_delta <= -tt_sensitivity ){
-     tt_pos += encoder.delta();
+   if (encoder_delta >= ENCODER_PPR/360*tt_deadzone_angle || encoder_delta <= -ENCODER_PPR/360*tt_deadzone_angle){
+     tt_pos += encoder.delta()*tt_lookup[tt_sensitivity];
    }
   
   // Limit the encoder from 0 to ENCODER_PPR
