@@ -21,7 +21,6 @@ const int encoder_cooldown_const = 40;
 int encoder_cooldown = 0;
 int encoder_delta;
 
-//uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 int button_state_array[NUMBER_OF_BUTTONS];
 
 bool hid_reactive_autoswitch = true;
@@ -139,17 +138,3 @@ void loop() {
         }
     }
 }
-
-/*void update_encoder() {
-    encoder_curstate = digitalRead(encoder_pins[0]);
-
-    if (encoder_curstate != encoder_laststate && encoder_curstate == 1) {
-        if (digitalRead(encoder_pins[1]) != encoder_curstate) {
-            tt_pos += tt_lookup[tt_sensitivity];
-        } else {
-            tt_pos -= tt_lookup[tt_sensitivity];
-        }
-    }
-
-    encoder_laststate = encoder_curstate;
-}*/
