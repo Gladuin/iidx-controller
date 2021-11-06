@@ -34,4 +34,4 @@ uint8_t encoder_pins[2] = {
     1     // white wire (b phase)
 };
 
-uint8_t tt_sensitivity = 3; //higher the value, the more insensitive it is
+uint32_t tt_sensitivity = 3; //higher the value, the more insensitive it is
