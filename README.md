@@ -1,5 +1,5 @@
 # hey yo
- - this branch uses [this](https://github.com/John-Lluch/Encoder)) library (timer-based interrupt, instead of pin change interrupt) for encoder
+ - this branch uses [this](https://github.com/John-Lluch/Encoder) library (timer-based interrupt, instead of pin change interrupt) for encoder
 	1. in other words, there is no need to put your encoder onto interrupt capable pins
  - not tested, use with caution
 
