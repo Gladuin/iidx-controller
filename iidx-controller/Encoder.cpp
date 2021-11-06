@@ -153,9 +153,9 @@ void Encoder::compute()
   if ( stDebouncer.isDebounced( st, DEBOUNCE_COUNT ) )
   {
     byte encoderSt = _encoderStVL;
-    if (encoderSt != st )
+    if (encoderSt != st && !encoderSt)
     {
-      bool wentDown = ( (encoderSt==0 && st==2) || (encoderSt==2 && st==3) || (encoderSt==3 && st==1) || (encoderSt==1 && st==0) );
+      bool wentDown = (st == 2);
 
       if ( wentDown ) _encoderValueVL--;
       else _encoderValueVL++;
