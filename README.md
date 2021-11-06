@@ -24,7 +24,7 @@ LEDs:
  - Negative terminal to GND.
 
 Encoder:
- - ~~The encoder's phase wires are ***REQUIRED*** to be connected to interrupt pins so it is advised to leave the encoder pins alone when editing the pinout. ~~
+ - ~~The encoder's phase wires are ***REQUIRED*** to be connected to interrupt pins so it is advised to leave the encoder pins alone when editing the pinout.~~
  - Set the PPR in `iidx-controller/IIDXHID.h`, line `5`.
  
 Sensitivity:
