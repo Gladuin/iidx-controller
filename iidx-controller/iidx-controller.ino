@@ -17,8 +17,9 @@ Encoder encoder(encoder_pins[0], encoder_pins[1], 99);
 uint32_t last_report = 0;
 
 int32_t tt_pos;
-//uint8_t encoder_curstate;
-//uint8_t encoder_laststate;
+const int encoder_cooldown_const = 40;
+int encoder_cooldown = 0;
+int encoder_delta;
 
 //uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 int button_state_array[NUMBER_OF_BUTTONS];
@@ -91,7 +92,15 @@ void loop() {
 
 
   //Encoder update
-   if (encoder.delta() >= tt_sensitivity || encoder.delta() <= -tt_sensitivity ){
+  if (encoder_cooldown==0) {
+    encoder_delta = encoder.delta();
+    encoder_cooldown=encoder_cooldown_const;
+  }
+  else {
+    encoder_cooldown--;
+  }
+  
+   if (encoder_delta >= tt_sensitivity || encoder_delta <= -tt_sensitivity ){
      tt_pos += encoder.delta();
    }
   
