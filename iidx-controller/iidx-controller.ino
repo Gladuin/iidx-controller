@@ -104,13 +104,14 @@ void loop() {
   
    if (encoder_delta >= ENCODER_PPR/360*tt_deadzone_angle || encoder_delta <= -ENCODER_PPR/360*tt_deadzone_angle){
      tt_pos += encoder.delta()*tt_lookup[tt_sensitivity];
+     //Serial.println(tt_pos);
    }
   
   // Limit the encoder from 0 to ENCODER_PPR
-    if (tt_pos >= ENCODER_PPR) {
-        tt_pos = 1;
-    } else if (tt_pos <= 0) {
-        tt_pos = ENCODER_PPR - 1;
+    if (tt_pos > ENCODER_PPR) {
+        tt_pos = 0;
+    } else if (tt_pos < 0) {
+        tt_pos = ENCODER_PPR;
     }
 
   // Send turntable and button state every 1000 microseconds

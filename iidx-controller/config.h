@@ -34,4 +34,4 @@ uint8_t encoder_pins[2] = {
     1     // white wire (b phase)
 };
 
-uint16_t tt_deadzone_angle = 3; //you need to spin over this angle for the tt to start reacting
+uint16_t tt_deadzone_angle = 1; //you need to spin over this angle for the tt to start reacting

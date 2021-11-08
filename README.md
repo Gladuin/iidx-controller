@@ -3,6 +3,11 @@
 	- in other words, there is no need to put your encoder onto interrupt capable pins
  - not tested, use with caution
 
+# to do
+ - currently if you turn the encoder more than a few rounds it will not read all the steps
+	- incorporate digitalreadFast into the Encoder library
+ - more testing
+ 
 # iidx-controller
 Software that enables you to create your own Arduino based beatmania IIDX controller.
 

@@ -131,8 +131,8 @@ SIGNAL(TIMER0_COMPA_vect)
 
 void Encoder::init()
 {
-  pinMode( _pinA, INPUT );
-  pinMode( _pinB, INPUT );
+  pinMode( _pinA, INPUT_PULLUP );
+  pinMode( _pinB, INPUT_PULLUP );
   pinMode( _pinP, INPUT_PULLUP );
 
   byte eA = !digitalRead( _pinA );
@@ -153,12 +153,13 @@ void Encoder::compute()
   if ( stDebouncer.isDebounced( st, DEBOUNCE_COUNT ) )
   {
     byte encoderSt = _encoderStVL;
-    if (encoderSt != st && !encoderSt)
+    if (encoderSt != st)
     {
-      bool wentDown = (st == 2);
+      bool wentDown = (!encoderSt && (st == 2));
+      bool wentUp = (!encoderSt && (st == 1));
 
       if ( wentDown ) _encoderValueVL--;
-      else _encoderValueVL++;
+      if ( wentUp ) _encoderValueVL++;
 
       /* if ( st == 0 || st == 3 )
       {

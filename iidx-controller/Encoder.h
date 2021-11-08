@@ -65,7 +65,7 @@ class Debouncer_encoder
     bool isDebounced( byte value, byte debounceCount);
 };
 
-#define DEBOUNCE_COUNT 3    // This is the number of consecutive reads that must be the same before accepting a pin change
+#define DEBOUNCE_COUNT 0    // This is the number of consecutive reads that must be the same before accepting a pin change
 #define INTERRUPT_PERIOD 25 // This is   cpu_clock_frequency / prescaler / desired_interrupt_frequency
                             // for example, set to 133 for 0.5ms (2kHz)  on a 16MHz processor: (16000000L / 64 / 2000  -> 133
                             // for example, set to 50  for 0.2ms (5kHz)  on a 16MHz processor: (16000000L / 64 / 5000  -> 50
