@@ -3,16 +3,12 @@
 
 #define BOUNCE_WITH_PROMPT_DETECTION
 #include <Bounce2.h>
-#include "Encoder.h"
 #include "IIDXHID.h"
-
-#define REPORT_DELAY 1000
-#define MS_DEBOUNCE 5
 
 IIDXHID_ IIDXHID;
 
+
 Bounce buttons[NUMBER_OF_BUTTONS];
-Encoder encoder(encoder_pins[0], encoder_pins[1], 99);
 
 uint32_t last_report = 0;
 
@@ -30,6 +26,51 @@ bool hid_reactive_autoswitch = true;
 bool hid_lights = true;
 bool reactive = false;
 
+volatile int g_encoderValue = 0;
+volatile unsigned int g_encoderValueVL = 0;
+volatile byte g_encoderStVL;
+  
+void initEncoder()
+{
+  IO_MODE( ENCODER_PIN0, INPUT_PULLUP );
+  IO_MODE( ENCODER_PIN1, INPUT_PULLUP );
+
+  byte eA = !IO_READ( ENCODER_PIN0 );
+  byte eB = !IO_READ( ENCODER_PIN1 );
+  g_encoderStVL = eB<<1 | eA;
+  
+  setupTimerInterrupt();
+}
+
+void computeEncoder()
+{
+  byte eA = !IO_READ(ENCODER_PIN0);
+  byte eB = !IO_READ(ENCODER_PIN1);
+
+  byte st = ((byte)eB<<1) | (byte)eA;
+
+  
+    byte encoderSt = g_encoderStVL;
+    if (encoderSt != st)
+    {
+      bool wentDown = (!encoderSt && (st == 2));
+      bool wentUp = (!encoderSt && (st == 1));
+
+      if ( wentDown ) g_encoderValueVL--;
+      if ( wentUp ) g_encoderValueVL++;
+      
+      g_encoderStVL = st;
+    }
+}
+
+int deltaEncoder()
+{ 
+  unsigned int v = g_encoderValueVL;  // put in a local var to avoid multiple reads of a volatile var
+  int d = v - g_encoderValue;
+  g_encoderValue = v;
+  return d; 
+}
+
 void setup() {
 
   //Buttons setup
@@ -40,7 +81,7 @@ void setup() {
     }
 
   //Encoder setup 
-    EncoderInterrupt.begin( &encoder );
+    initEncoder();
 
   //LED Setup
     for (int i = 0; i < NUMBER_OF_LEDS; i++) {
@@ -54,8 +95,6 @@ void setup() {
         digitalWrite(led_pins[i], LOW);
     }
 
-  //Encoder last state
-    //encoder_laststate = digitalRead(encoder_pins[0]);
 }
 
 void loop() {
@@ -95,7 +134,7 @@ void loop() {
 
   //Encoder update
   if (encoder_cooldown==0) {
-    encoder_delta = encoder.delta();
+    encoder_delta = deltaEncoder();
     encoder_cooldown=encoder_cooldown_const;
   }
   else {
@@ -103,7 +142,7 @@ void loop() {
   }
   
    if (encoder_delta >= ENCODER_PPR/360*tt_deadzone_angle || encoder_delta <= -ENCODER_PPR/360*tt_deadzone_angle){
-     tt_pos += encoder.delta()*tt_lookup[tt_sensitivity];
+     tt_pos += deltaEncoder()*tt_lookup[tt_sensitivity];
      //Serial.println(tt_pos);
    }
   
@@ -141,4 +180,38 @@ void loop() {
             modeChanged = false;
         }
     }
+}
+
+void setupTimerInterrupt()
+{
+  TCCR3A = 0; // set entire TCCR3A register to 0
+  TCCR3B = 0; // same for TCCR3B
+  TCNT3  = 0; // initialize counter value to 0
+
+  // set compare match register (write to the high bit first) 
+  OCR3AH = 0;
+  
+  // set compare match register for particular frequency increments
+//  OCR3AL = 133; // = (16000000) / 64 / 2000  -> 133   This is  clock_frequency / prescaler / desired_frequency  ( 2 KHz, 0.5ms)
+//  OCR3AL = 50;  // = (16000000) / 64 / 5000  ->  50   This is  clock_frequency / prescaler / desired_frequency  ( 5 KHz, 0.2ms)
+//  OCR3AL = 25;  // = (16000000) / 64 / 10000 ->  25   This is  clock_frequency / prescaler / desired_frequency  (10 kHz, 0.1ms)
+  OCR3AL = INTERRUPT_PERIOD; 
+  
+  // enable timer compare interrupt
+  TIMSK3 = (1 << OCIE3A);
+  
+  // turn on mode 4 (CTC mode) (up to OCR3A)
+  TCCR3B |= (1 << WGM32);
+  
+  // Set CS10 and CS12 bits for 64 prescaler
+  TCCR3B |= (1 << CS30) | (1 << CS31);
+
+  // More information at
+  // http://medesign.seas.upenn.edu/index.php/Guides/MaEvArM-timers 
+  //
+}
+
+SIGNAL(TIMER3_COMPA_vect) 
+{  
+  computeEncoder();
 }
