@@ -32,8 +32,8 @@ volatile byte g_encoderStVL;
   
 void initEncoder()
 {
-  IO_MODE( ENCODER_PIN0, INPUT_PULLUP );
-  IO_MODE( ENCODER_PIN1, INPUT_PULLUP );
+  pinMode( ENCODER_PIN0, INPUT_PULLUP );
+  pinMode( ENCODER_PIN1, INPUT_PULLUP );
 
   byte eA = !IO_READ( ENCODER_PIN0 );
   byte eB = !IO_READ( ENCODER_PIN1 );
