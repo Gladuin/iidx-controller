@@ -2,7 +2,7 @@
 
 #define NUMBER_OF_LEDS 11
 #define NUMBER_OF_BUTTONS 11
-#define ENCODER_PPR 360
+#define ENCODER_PPR 360*40
 
 #define NO_SENSITIVITY 0
 
