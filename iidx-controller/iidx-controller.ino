@@ -16,9 +16,9 @@ int32_t tt_pos;
 uint8_t tt_sensitivity = 9;
 uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
-const int encoder_cooldown_const = 40;
+const int encoder_cooldown_const = 100;
 int encoder_cooldown = 0;
-int encoder_delta;
+int tt_delta;
 
 int button_state_array[NUMBER_OF_BUTTONS];
 
@@ -63,7 +63,7 @@ void computeEncoder()
     }
 }
 
-int deltaEncoder()
+int encoder_delta()
 { 
   unsigned int v = g_encoderValueVL;  // put in a local var to avoid multiple reads of a volatile var
   int d = v - g_encoderValue;
@@ -134,24 +134,27 @@ void loop() {
 
 
   //Encoder update
-  if (encoder_cooldown==0) {
-    encoder_delta = deltaEncoder();
-    encoder_cooldown=encoder_cooldown_const;
-  }
-  else {
-    encoder_cooldown--;
-  }
+   if (encoder_cooldown==0) 
+    {
+     tt_delta = encoder_delta();
+     encoder_cooldown=encoder_cooldown_const;
+    }
+   else 
+    {
+     encoder_cooldown--;
+     tt_delta=0;
+    }
   
-   if (encoder_delta >= ENCODER_PPR/360*tt_deadzone_angle || encoder_delta <= -ENCODER_PPR/360*tt_deadzone_angle){
-     tt_pos += deltaEncoder()*tt_lookup[tt_sensitivity];
+      if (tt_delta >= ADJUSTED_PPR/360*tt_deadzone_angle || tt_delta <= -ADJUSTED_PPR/360*tt_deadzone_angle){
+     tt_pos += tt_delta*tt_lookup[tt_sensitivity];
      //Serial.println(tt_pos);
    }
   
-  // Limit the encoder from 0 to ENCODER_PPR
-    if (tt_pos > (float)ENCODER_PPR * ((float)255/(float)INCREMENTS_PER_FULL_TURN)) {
+   // Limit the encoder from 0 to ADJUSTED_PPR
+    if (tt_pos >= ADJUSTED_PPR) {
         tt_pos = 0;
     } else if (tt_pos < 0) {
-        tt_pos = (float)ENCODER_PPR * ((float)255/(float)INCREMENTS_PER_FULL_TURN);
+        tt_pos = ADJUSTED_PPR-1;
     }
 
   // Send turntable and button state every 1000 microseconds

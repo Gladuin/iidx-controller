@@ -6,6 +6,8 @@
 
 #define INCREMENTS_PER_FULL_TURN 72   //72 for 60Hz IIDX, 144 for 120Hz IIDX, 255 for 1 to 1
 
+#define ADJUSTED_PPR ((int)((float)ENCODER_PPR * ((float)255/(float)INCREMENTS_PER_FULL_TURN)))
+
 #define NO_SENSITIVITY 0
 
 #define KONAMI_SPOOF 1

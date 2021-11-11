@@ -3,8 +3,8 @@
 #define BUTTON_PADDING (8 - (NUMBER_OF_BUTTONS % 8))
 #define LED_PADDING (8 - (NUMBER_OF_LEDS % 8))
 
-#define ENCODERMAX1 ENCODER_PPR & 0x00FF
-#define ENCODERMAX2 ENCODER_PPR >> 8
+#define ENCODERMAX1 ADJUSTED_PPR & 0x00FF
+#define ENCODERMAX2 ADJUSTED_PPR >> 8
 
 uint8_t usb_data[128];
 uint16_t lamp_hid_state = 0;
