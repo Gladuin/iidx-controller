@@ -5,7 +5,7 @@
 
 # to do
  - ~~incorporate digitalreadFast into the Encoder library~~
-	- Credits to CrzyRedMachine
+	- Credits to CrazyRedMachine
  - more testing
  
 # iidx-controller
