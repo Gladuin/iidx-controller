@@ -147,10 +147,10 @@ void loop() {
    }
   
   // Limit the encoder from 0 to ENCODER_PPR
-    if (tt_pos > ENCODER_PPR) {
+    if (tt_pos > ENCODER_PPR*TT_INCREMENTS_MULTIPLIER) {
         tt_pos = 0;
     } else if (tt_pos < 0) {
-        tt_pos = ENCODER_PPR;
+        tt_pos = ENCODER_PPR*TT_INCREMENTS_MULTIPLIER;
     }
 
   // Send turntable and button state every 1000 microseconds
