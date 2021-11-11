@@ -4,11 +4,7 @@
 #define NUMBER_OF_BUTTONS 11
 #define ENCODER_PPR 360
 
-//#define INCREMENTS_PER_FULL_TURN 72   //72 for 60Hz IIDX, 144 for 120Hz IIDX
-
-#define TT_INCREMENTS_MULTIPLIER 3.56   //3.56 for 60Hz IIDX (72 per full turn) (255/72), 
-                                        //1.77 for 120Hz IIDX (144 per full turn) (255/144),
-                                        //1 for 1 full turn IRL to be 1 full turn in software
+#define INCREMENTS_PER_FULL_TURN 72   //72 for 60Hz IIDX, 144 for 120Hz IIDX, 255 for 1 to 1
 
 #define NO_SENSITIVITY 0
 

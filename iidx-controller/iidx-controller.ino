@@ -98,6 +98,7 @@ void setup() {
 }
 
 void loop() {
+
     uint32_t buttons_state = 0;
 
     // Mixed mode will behave sometimes like HID, sometimes like reactive
@@ -147,10 +148,10 @@ void loop() {
    }
   
   // Limit the encoder from 0 to ENCODER_PPR
-    if (tt_pos > ENCODER_PPR*TT_INCREMENTS_MULTIPLIER) {
+    if (tt_pos > (float)ENCODER_PPR * ((float)255/(float)INCREMENTS_PER_FULL_TURN)) {
         tt_pos = 0;
     } else if (tt_pos < 0) {
-        tt_pos = ENCODER_PPR*TT_INCREMENTS_MULTIPLIER;
+        tt_pos = (float)ENCODER_PPR * ((float)255/(float)INCREMENTS_PER_FULL_TURN);
     }
 
   // Send turntable and button state every 1000 microseconds
