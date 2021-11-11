@@ -4,8 +4,8 @@
  - not tested, use with caution
 
 # to do
- - currently if you turn the encoder more than a few rounds it will not read all the steps
-	- incorporate digitalreadFast into the Encoder library
+ - ~~incorporate digitalreadFast into the Encoder library~~
+	- Credits to CrzyRedMachine
  - more testing
  
 # iidx-controller
