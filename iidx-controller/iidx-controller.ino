@@ -144,7 +144,7 @@ void loop() {
         tt_pos = ADJUSTED_PPR-1;
     }
 
-    // Send turntable and button state every 1000 microseconds
+    // Send turntable and button state every REPORT_DELAY microseconds
     if (((micros() - last_report) >= REPORT_DELAY)) {
         IIDXHID.send_state(buttons_state, tt_pos);
         last_report = micros();
