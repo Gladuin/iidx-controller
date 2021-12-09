@@ -35,9 +35,6 @@ uint8_t button_pins[] = {
 
 //Please also change ENCODER_PPR setting in IIDXHID.h to your encoder's PPR
 
-uint16_t tt_deadzone_angle = 1; //you need to spin over this angle for the value to start updating
-
-
 //No need to change anything below
 #define READFAST 1 // enable faster read/write for encoder handling
 
