@@ -1,4 +1,5 @@
 #include "IIDXHID.h"
+#include "config.h"
 
 #define BUTTON_PADDING (8 - (NUMBER_OF_BUTTONS % 8))
 #define LED_PADDING (8 - (NUMBER_OF_LEDS % 8))
@@ -10,7 +11,6 @@ uint8_t usb_data[128];
 uint16_t lamp_hid_state = 0;
 
 uint8_t extern tt_sensitivity;
-uint8_t extern led_pins[];
 bool extern hid_reactive_autoswitch;
 
 /* HID string and device descriptor */

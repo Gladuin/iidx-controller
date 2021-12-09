@@ -29,19 +29,19 @@ volatile byte g_encoderStVL;
 uint32_t last_report = 0;
   
 void initEncoder() {
-    pinMode(ENCODER_PIN0, INPUT_PULLUP);
-    pinMode(ENCODER_PIN1, INPUT_PULLUP);
+    pinMode(encoder_pin0, INPUT_PULLUP);
+    pinMode(encoder_pin1, INPUT_PULLUP);
     
-    byte eA = !IO_READ(ENCODER_PIN0);
-    byte eB = !IO_READ(ENCODER_PIN1);
+    byte eA = !IO_READ(encoder_pin0);
+    byte eB = !IO_READ(encoder_pin1);
     g_encoderStVL = eB<<1 | eA;
     
     setupTimerInterrupt();
 }
 
 void computeEncoder() {
-    byte eA = !IO_READ(ENCODER_PIN0);
-    byte eB = !IO_READ(ENCODER_PIN1);
+    byte eA = !IO_READ(encoder_pin0);
+    byte eB = !IO_READ(encoder_pin1);
     
     byte st = ((byte)eB<<1) | (byte)eA;
     

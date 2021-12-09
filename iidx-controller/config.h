@@ -1,6 +1,6 @@
 /* PINOUT */
 // Pins where the LEDs are connected to
-uint8_t led_pins[] = {
+const uint8_t led_pins[] = {
     2,    // button 1 led
     4,    // button 2 led
     6,    // button 3 led
@@ -15,7 +15,7 @@ uint8_t led_pins[] = {
 };
 
 // Pins where the buttons are connected to
-uint8_t button_pins[] = {
+const uint8_t button_pins[] = {
     3,    // button 1
     5,    // button 2
     7,    // button 3
@@ -29,8 +29,9 @@ uint8_t button_pins[] = {
     17    // misc button 4
 };
 
-#define ENCODER_PIN0 0 // green wire (a phase)
-#define ENCODER_PIN1 1 // white wire (b phase)
+// Pins where the encoder is connected to
+const uint8_t encoder_pin0 = 0;  // green wire (a phase)
+const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 
 /* ENCODER OPTIONS */
 
