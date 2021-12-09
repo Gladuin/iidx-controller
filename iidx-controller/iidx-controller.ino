@@ -6,7 +6,7 @@
 
 IIDXHID_ IIDXHID;
 
-Bounce buttons[NUMBER_OF_BUTTONS];
+Bounce buttons[sizeof(button_pins)];
 
 int tt_delta;
 int32_t tt_pos;
@@ -16,7 +16,7 @@ uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 const int encoder_cooldown_const = 100;
 int encoder_cooldown = 0;
 
-int button_state_array[NUMBER_OF_BUTTONS];
+int button_state_array[sizeof(button_pins)];
 
 bool hid_reactive_autoswitch = true;
 bool hid_lights = true;
@@ -68,7 +68,7 @@ int encoder_delta() {
 
 void setup() {
     // Buttons setup
-    for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
+    for (int i = 0; i < sizeof(button_pins); i++) {
         buttons[i] = Bounce();
         buttons[i].attach(button_pins[i], INPUT_PULLUP);
         buttons[i].interval(MS_DEBOUNCE);
@@ -78,14 +78,14 @@ void setup() {
     initEncoder();
     
     // LED startup animation and setup
-    for (int i = 0; i < NUMBER_OF_LEDS; i++) {
+    for (int i = 0; i < sizeof(led_pins); i++) {
         pinMode(led_pins[i], OUTPUT);
         digitalWrite(led_pins[i], HIGH);
     }
     
     delay(200);
     
-    for (int i = 0; i < NUMBER_OF_LEDS; i++) {
+    for (int i = 0; i < sizeof(led_pins); i++) {
         digitalWrite(led_pins[i], LOW);
     }
 }
@@ -105,13 +105,13 @@ void loop() {
     }
 
     // Write button status into array
-    for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
+    for (int i = 0; i < sizeof(button_pins); i++) {
         buttons[i].update();
         button_state_array[i] = buttons[i].read();
     }
   
     // Read from array and convert to bitfield
-    for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
+    for (int i = 0; i < sizeof(button_pins); i++) {
         int button_value = button_state_array[i];
 
         // Put button states into the buttons_state variable via bitwise operations
@@ -152,7 +152,7 @@ void loop() {
 
     // Manual lightmode update
     static bool modeChanged = false;
-    if (buttons_state & ((uint32_t)1 << (NUMBER_OF_BUTTONS - 1))) {
+    if (buttons_state & ((uint32_t)1 << (sizeof(button_pins) - 1))) {
         if ((buttons_state & 1) && (modeChanged == false)) {
             modeChanged = true;
             if (hid_reactive_autoswitch) {

@@ -48,9 +48,6 @@ const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 /* OTHER OPTIONS */ 
 #define MS_DEBOUNCE 5 // button debouncing time
 
-#define NUMBER_OF_LEDS 11
-#define NUMBER_OF_BUTTONS 11
-
 #define NO_SENSITIVITY 0
 
 #define KONAMI_SPOOF 1
