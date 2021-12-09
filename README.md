@@ -37,7 +37,7 @@ LED mode switching:
    4. HID _and_ reactive
 
 Info:
- - Pinouts are available in ~~`iidx-controller/config.h`, you can edit them there if necessary.
+ - Pinouts are available in `iidx-controller/config.h`, you can edit them there if necessary.
  - If changing the number of buttons / LEDs, change the value in `iidx-controller/IIDXHID.h` (line `3` and `4` respectively) to the new number of buttons / LEDs.
  - Leonardo pinout (what the numbers in the code's pinout arrays mean) at the bottom of this page.
 
