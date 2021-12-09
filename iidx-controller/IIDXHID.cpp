@@ -7,6 +7,8 @@
 #define ENCODERMAX1 ADJUSTED_PPR & 0x00FF
 #define ENCODERMAX2 ADJUSTED_PPR >> 8
 
+#define STRING_ID_Base 4
+
 uint8_t usb_data[128];
 uint16_t lamp_hid_state = 0;
 

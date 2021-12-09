@@ -34,8 +34,7 @@ const uint8_t encoder_pin0 = 0;  // green wire (a phase)
 const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 
 /* ENCODER OPTIONS */
-
-// Please also change ENCODER_PPR setting in IIDXHID.h to your encoder's PPR
+#define ENCODER_PPR 600
 
 // No need to change anything below
 #define READFAST 1 // enable faster read/write for encoder handling
@@ -48,6 +47,15 @@ const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 
 /* OTHER OPTIONS */ 
 #define MS_DEBOUNCE 5 // button debouncing time
+
+#define NUMBER_OF_LEDS 11
+#define NUMBER_OF_BUTTONS 11
+
+#define NO_SENSITIVITY 0
+
+#define KONAMI_SPOOF 1
+
+#define INCREMENTS_PER_FULL_TURN 72   // 72 for 60Hz IIDX, 144 for 120Hz IIDX, 255 for 1 to 1
 
 /* DO NOT EDIT ANYTHING BELOW */
 #define REPORT_DELAY 1000
