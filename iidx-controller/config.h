@@ -1,4 +1,5 @@
 /* PINOUT */
+// Pins where the LEDs are connected to
 uint8_t led_pins[] = {
     2,    // button 1 led
     4,    // button 2 led
@@ -28,22 +29,21 @@ uint8_t button_pins[] = {
     17    // misc button 4
 };
 
-#define ENCODER_PIN0 0 //green wire (a phase)
-#define ENCODER_PIN1 1 //white wire (b phase)
+#define ENCODER_PIN0 0 // green wire (a phase)
+#define ENCODER_PIN1 1 // white wire (b phase)
 
 /* ENCODER OPTIONS */
 
-//Please also change ENCODER_PPR setting in IIDXHID.h to your encoder's PPR
+// Please also change ENCODER_PPR setting in IIDXHID.h to your encoder's PPR
 
-//No need to change anything below
+// No need to change anything below
 #define READFAST 1 // enable faster read/write for encoder handling
 
-#define INTERRUPT_PERIOD 25 // This is   cpu_clock_frequency / prescaler / desired_interrupt_frequency
-                            // for example, set to 133 for 0.5ms (2kHz)  on a 16MHz processor: (16000000L / 64 / 2000  -> 133
-                            // for example, set to 50  for 0.2ms (5kHz)  on a 16MHz processor: (16000000L / 64 / 5000  -> 50
-                            // for example, set to 25  for 0.1ms (10kHz) on a 16MHz processor: (16000000L / 64 / 10000 -> 25
-
-
+// This is (cpu_clock_frequency / prescaler / desired_interrupt_frequency)
+// for example, set to 133 for 0.5ms (2kHz)  on a 16MHz processor: (16000000L / 64 / 2000  -> 133
+// for example, set to 50  for 0.2ms (5kHz)  on a 16MHz processor: (16000000L / 64 / 5000  -> 50
+// for example, set to 25  for 0.1ms (10kHz) on a 16MHz processor: (16000000L / 64 / 10000 -> 25
+#define INTERRUPT_PERIOD 25
 
 /* OTHER OPTIONS */ 
 #define MS_DEBOUNCE 5 // button debouncing time
@@ -52,12 +52,12 @@ uint8_t button_pins[] = {
 #define REPORT_DELAY 1000
 
 #if READFAST == 1
- #include "digitalWriteFast.h"
- #define IO_WRITE(X, Y) digitalWriteFast(X, Y)
- #define IO_READ(X) digitalReadFast(X)
- #define IO_MODE(X, Y) pinModeFast(X, Y)
+    #include "digitalWriteFast.h"
+    #define IO_WRITE(X, Y) digitalWriteFast(X, Y)
+    #define IO_READ(X) digitalReadFast(X)
+    #define IO_MODE(X, Y) pinModeFast(X, Y)
 #else
- #define IO_WRITE(X, Y) digitalWrite(X, Y)
- #define IO_READ(X) digitalRead(X)
- #define IO_MODE(X, Y) pinMode(X, Y)
+    #define IO_WRITE(X, Y) digitalWrite(X, Y)
+    #define IO_READ(X) digitalRead(X)
+    #define IO_MODE(X, Y) pinMode(X, Y)
 #endif
