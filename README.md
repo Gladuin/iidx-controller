@@ -1,13 +1,3 @@
-# ey yo
- - this branch uses [this](https://github.com/John-Lluch/Encoder) library (timer-based interrupt, instead of pin change interrupt) for encoder
-	- in other words, there is no need to put your encoder onto interrupt capable pins
- - not tested, use with caution
-
-# to do
- - ~~incorporate digitalreadFast into the Encoder library~~
-	- Credits to CrazyRedMachine
- - more testing
- 
 # iidx-controller
 Software that enables you to create your own Arduino based beatmania IIDX controller.
 
@@ -35,7 +25,6 @@ Encoder:
 Sensitivity:
  - Settable in Spice
 
- 
 Turntable Trigger Deadzone:
  - Configurable in config.h `tt_deadzone_angle`.
 
