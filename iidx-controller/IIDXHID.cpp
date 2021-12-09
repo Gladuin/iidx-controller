@@ -15,14 +15,14 @@ bool extern hid_reactive_autoswitch;
 
 /* HID string and device descriptor */
 #if KONAMI_SPOOF == 1
-const DeviceDescriptor PROGMEM USB_DeviceDescriptorIAD =
-  D_DEVICE(0xEF,0x02,0x01,64,0x1ccf,0x8048,0x100,IMANUFACTURER,IPRODUCT,ISERIAL,1);
+const DeviceDescriptor PROGMEM USB_DeviceDescriptorIAD = D_DEVICE(0xEF, 0x02, 0x01, 64, 0x1ccf, 0x8048, 0x100, IMANUFACTURER, IPRODUCT, ISERIAL, 1);
 const char* const PROGMEM String_Manufacturer = "Konami Amusement";
 const char* const PROGMEM String_Product = "beatmania IIDX controller premium model";
 #else
 const char* const PROGMEM String_Manufacturer = "gladuin";
 const char* const PROGMEM String_Product = "IIDX Controller";
 #endif
+
 const char* const PROGMEM String_Serial = "IIDX";
 
 const char* const PROGMEM LEDString_00 = "Button 1";
@@ -131,21 +131,25 @@ static const uint8_t PROGMEM hid_report[] = {
 };
 
 static bool SendControl(uint8_t d) {
-  return USB_SendControl(0, &d, 1) == 1;
+    return USB_SendControl(0, &d, 1) == 1;
 }
 
 static bool USB_SendStringDescriptor(const char *string_P, uint8_t string_len, uint8_t flags) {
-        SendControl(2 + string_len * 2);
-        SendControl(3);
-        bool pgm = flags & TRANSFER_PGM;
-        for(uint8_t i = 0; i < string_len; i++) {
-                bool r = SendControl(pgm ? pgm_read_byte(&string_P[i]) : string_P[i]);
-                r &= SendControl(0); // high byte
-                if(!r) {
-                        return false;
-                }
+    bool pgm = flags & TRANSFER_PGM;
+    
+    SendControl(2 + string_len * 2);
+    SendControl(3);
+    
+    for (uint8_t i = 0; i < string_len; i++) {
+        bool r = SendControl(pgm ? pgm_read_byte(&string_P[i]) : string_P[i]);
+        r &= SendControl(0); // high byte
+        
+        if (!r) {
+            return false;
         }
-        return true;
+    }
+    
+    return true;
 }
 
 IIDXHID_::IIDXHID_(void) : PluggableUSBModule(1, 1, epType) {
@@ -155,31 +159,30 @@ IIDXHID_::IIDXHID_(void) : PluggableUSBModule(1, 1, epType) {
 
 int IIDXHID_::getInterface(byte* interface_count) {
     *interface_count += 1;
+    
     HIDDescriptor hid_interface = {
         D_INTERFACE(pluggedInterface, 1, USB_DEVICE_CLASS_HUMAN_INTERFACE, HID_SUBCLASS_NONE, HID_PROTOCOL_NONE),
         D_HIDREPORT(sizeof(hid_report)),
         D_ENDPOINT(USB_ENDPOINT_IN(pluggedEndpoint), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 0x01)
     };
+    
     return USB_SendControl(0, &hid_interface, sizeof(hid_interface));
 }
 
 int IIDXHID_::getDescriptor(USBSetup& setup) {
-#if KONAMI_SPOOF == 1  
-    if(setup.wValueH == USB_DEVICE_DESCRIPTOR_TYPE) {
+    #if KONAMI_SPOOF == 1  
+    if (setup.wValueH == USB_DEVICE_DESCRIPTOR_TYPE) {
         return USB_SendControl(TRANSFER_PGM, (const uint8_t*)&USB_DeviceDescriptorIAD, sizeof(USB_DeviceDescriptorIAD));
     }
-#endif
+    #endif
     if (setup.wValueH == USB_STRING_DESCRIPTOR_TYPE) {
         if (setup.wValueL == IPRODUCT) {
             return USB_SendStringDescriptor(String_Product, strlen(String_Product), 0);
-        }
-        else if (setup.wValueL == IMANUFACTURER) {
+        } else if (setup.wValueL == IMANUFACTURER) {
             return USB_SendStringDescriptor(String_Manufacturer, strlen(String_Manufacturer), 0);
-        }
-        else if (setup.wValueL == ISERIAL) {
+        } else if (setup.wValueL == ISERIAL) {
             return USB_SendStringDescriptor(String_Serial, strlen(String_Serial), 0);
-        }
-        else if(setup.wValueL >= STRING_ID_Base && setup.wValueL < (STRING_ID_Base + STRING_ID_Count)) {
+        } else if(setup.wValueL >= STRING_ID_Base && setup.wValueL < (STRING_ID_Base + STRING_ID_Count)) {
             return USB_SendStringDescriptor(String_indiv[setup.wValueL - STRING_ID_Base], strlen(String_indiv[setup.wValueL - STRING_ID_Base]), 0);
         }
     }

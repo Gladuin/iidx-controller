@@ -8,8 +8,6 @@ IIDXHID_ IIDXHID;
 
 Bounce buttons[NUMBER_OF_BUTTONS];
 
-uint32_t last_report = 0;
-
 int tt_delta;
 int32_t tt_pos;
 uint8_t tt_sensitivity = 9;
@@ -27,6 +25,8 @@ bool reactive = false;
 volatile int g_encoderValue = 0;
 volatile unsigned int g_encoderValueVL = 0;
 volatile byte g_encoderStVL;
+
+uint32_t last_report = 0;
   
 void initEncoder() {
     pinMode(ENCODER_PIN0, INPUT_PULLUP);
