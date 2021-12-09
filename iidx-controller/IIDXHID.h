@@ -2,7 +2,8 @@
 
 #define NUMBER_OF_LEDS 11
 #define NUMBER_OF_BUTTONS 11
-#define ENCODER_PPR 360
+#define ENCODER_PPR 600
+
 
 #define INCREMENTS_PER_FULL_TURN 72   //72 for 60Hz IIDX, 144 for 120Hz IIDX, 255 for 1 to 1
 

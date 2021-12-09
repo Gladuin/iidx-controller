@@ -32,6 +32,13 @@ uint8_t button_pins[] = {
 #define ENCODER_PIN1 1 //white wire (b phase)
 
 /* ENCODER OPTIONS */
+
+//Please also change ENCODER_PPR setting in IIDXHID.h to your encoder's PPR
+
+uint16_t tt_deadzone_angle = 1; //you need to spin over this angle for the value to start updating
+
+
+//No need to change anything below
 #define READFAST 1 // enable faster read/write for encoder handling
 
 #define INTERRUPT_PERIOD 25 // This is   cpu_clock_frequency / prescaler / desired_interrupt_frequency
@@ -39,7 +46,7 @@ uint8_t button_pins[] = {
                             // for example, set to 50  for 0.2ms (5kHz)  on a 16MHz processor: (16000000L / 64 / 5000  -> 50
                             // for example, set to 25  for 0.1ms (10kHz) on a 16MHz processor: (16000000L / 64 / 10000 -> 25
 
-uint16_t tt_deadzone_angle = 1; //you need to spin over this angle for the tt to start reacting
+
 
 /* OTHER OPTIONS */ 
 #define MS_DEBOUNCE 5 // button debouncing time
