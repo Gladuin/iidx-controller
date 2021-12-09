@@ -1,76 +1,89 @@
+
+#include "config.h"
+
 #define BOUNCE_WITH_PROMPT_DETECTION
 #include <Bounce2.h>
-
 #include "IIDXHID.h"
-
-#define REPORT_DELAY 1000
-#define MS_DEBOUNCE 5
 
 IIDXHID_ IIDXHID;
 
-// Pins where the LEDs are connected to
-uint8_t led_pins[NUMBER_OF_LEDS] = {
-    2,    // button 1 led
-    4,    // button 2 led
-    6,    // button 3 led
-    8,    // button 4 led
-    10,   // button 5 led
-    12,   // button 6 led
-    18,   // button 7 led
-    20,   // misc button 1 led
-    22,   // misc button 2 led
-    14,   // misc button 3 led
-    16    // misc button 4 led
-};
-
-// Pins where the buttons are connected to
-uint8_t button_pins[NUMBER_OF_BUTTONS] = {
-    3,    // button 1
-    5,    // button 2
-    7,    // button 3
-    9,    // button 4
-    11,   // button 5
-    13,   // button 6
-    19,   // button 7
-    21,   // misc button 1
-    23,   // misc button 2
-    15,   // misc button 3
-    17    // misc button 4
-};
-
-// Pins encoder is connected to
-uint8_t encoder_pins[2] = {
-    0,    // green wire (a phase)
-    1     // white wire (b phase)
-};
 
 Bounce buttons[NUMBER_OF_BUTTONS];
 
 uint32_t last_report = 0;
 
 int32_t tt_pos;
-uint8_t encoder_curstate;
-uint8_t encoder_laststate;
-
 uint8_t tt_sensitivity = 9;
 uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+
+const int encoder_cooldown_const = 100;
+int encoder_cooldown = 0;
+int tt_delta;
+
+int button_state_array[NUMBER_OF_BUTTONS];
 
 bool hid_reactive_autoswitch = true;
 bool hid_lights = true;
 bool reactive = false;
 
+volatile int g_encoderValue = 0;
+volatile unsigned int g_encoderValueVL = 0;
+volatile byte g_encoderStVL;
+  
+void initEncoder()
+{
+  pinMode( ENCODER_PIN0, INPUT_PULLUP );
+  pinMode( ENCODER_PIN1, INPUT_PULLUP );
+
+  byte eA = !IO_READ( ENCODER_PIN0 );
+  byte eB = !IO_READ( ENCODER_PIN1 );
+  g_encoderStVL = eB<<1 | eA;
+  
+  setupTimerInterrupt();
+}
+
+void computeEncoder()
+{
+  byte eA = !IO_READ(ENCODER_PIN0);
+  byte eB = !IO_READ(ENCODER_PIN1);
+
+  byte st = ((byte)eB<<1) | (byte)eA;
+
+  
+    byte encoderSt = g_encoderStVL;
+    if (encoderSt != st)
+    {
+      bool wentDown = (!encoderSt && (st == 2));
+      bool wentUp = (!encoderSt && (st == 1));
+
+      if ( wentDown ) g_encoderValueVL--;
+      if ( wentUp ) g_encoderValueVL++;
+      
+      g_encoderStVL = st;
+    }
+}
+
+int encoder_delta()
+{ 
+  unsigned int v = g_encoderValueVL;  // put in a local var to avoid multiple reads of a volatile var
+  int d = v - g_encoderValue;
+  g_encoderValue = v;
+  return d; 
+}
+
 void setup() {
+
+  //Buttons setup
     for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
         buttons[i] = Bounce();
         buttons[i].attach(button_pins[i], INPUT_PULLUP);
         buttons[i].interval(MS_DEBOUNCE);
     }
 
-    for (uint8_t i = 0; i < sizeof(encoder_pins); i++) {
-        pinMode(encoder_pins[i], INPUT_PULLUP);
-        attachInterrupt(digitalPinToInterrupt(encoder_pins[i]), update_encoder, CHANGE);
-    }
+  //Encoder setup 
+    initEncoder();
 
+  //LED Setup
     for (int i = 0; i < NUMBER_OF_LEDS; i++) {
         pinMode(led_pins[i], OUTPUT);
         digitalWrite(led_pins[i], HIGH);
@@ -82,10 +95,10 @@ void setup() {
         digitalWrite(led_pins[i], LOW);
     }
 
-    encoder_laststate = digitalRead(encoder_pins[0]);
 }
 
 void loop() {
+
     uint32_t buttons_state = 0;
 
     // Mixed mode will behave sometimes like HID, sometimes like reactive
@@ -99,9 +112,15 @@ void loop() {
         }
     }
 
+  //write button status into array
     for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
         buttons[i].update();
-        int button_value = buttons[i].read();
+        button_state_array[i] = buttons[i].read();
+    }
+  
+  //read from array and convert to bitfield
+    for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
+        int button_value = button_state_array[i];
 
         // Put button states into the buttons_state variable via bitwise operations
         if (button_value == LOW) {
@@ -113,20 +132,38 @@ void loop() {
 
     IIDXHID.write_lights(buttons_state, hid_lights, reactive);
 
-    // Limit the encoder from 0 to ENCODER_PPR
-    if (tt_pos >= ENCODER_PPR) {
-        tt_pos = 1;
-    } else if (tt_pos <= 0) {
-        tt_pos = ENCODER_PPR - 1;
+
+  //Encoder update
+   if (encoder_cooldown==0) 
+    {
+     tt_delta = encoder_delta();
+     encoder_cooldown=encoder_cooldown_const;
+    }
+   else 
+    {
+     encoder_cooldown--;
+     tt_delta=0;
+    }
+  
+   if (tt_delta >= ADJUSTED_PPR/360*tt_deadzone_angle || tt_delta <= -ADJUSTED_PPR/360*tt_deadzone_angle){
+     tt_pos += tt_delta*tt_lookup[tt_sensitivity];
+     //Serial.println(tt_pos);
+   }
+  
+   // Limit the encoder from 0 to ADJUSTED_PPR
+    if (tt_pos >= ADJUSTED_PPR) {
+        tt_pos = 0;
+    } else if (tt_pos < 0) {
+        tt_pos = ADJUSTED_PPR-1;
     }
 
-    // Send turntable and button state every 1000 microseconds
+  // Send turntable and button state every 1000 microseconds
     if (((micros() - last_report) >= REPORT_DELAY)) {
         IIDXHID.send_state(buttons_state, tt_pos);
         last_report = micros();
     }
 
-    // MANUAL LIGHTMODE UPDATE
+  // MANUAL LIGHTMODE UPDATE
     static bool modeChanged = false;
     if (buttons_state & ((uint32_t)1 << (NUMBER_OF_BUTTONS - 1))) {
         if ((buttons_state & 1) && (modeChanged == false)) {
@@ -149,16 +186,36 @@ void loop() {
     }
 }
 
-void update_encoder() {
-    encoder_curstate = digitalRead(encoder_pins[0]);
+void setupTimerInterrupt()
+{
+  TCCR3A = 0; // set entire TCCR3A register to 0
+  TCCR3B = 0; // same for TCCR3B
+  TCNT3  = 0; // initialize counter value to 0
 
-    if (encoder_curstate != encoder_laststate && encoder_curstate == 1) {
-        if (digitalRead(encoder_pins[1]) != encoder_curstate) {
-            tt_pos += tt_lookup[tt_sensitivity];
-        } else {
-            tt_pos -= tt_lookup[tt_sensitivity];
-        }
-    }
+  // set compare match register (write to the high bit first) 
+  OCR3AH = 0;
+  
+  // set compare match register for particular frequency increments
+//  OCR3AL = 133; // = (16000000) / 64 / 2000  -> 133   This is  clock_frequency / prescaler / desired_frequency  ( 2 KHz, 0.5ms)
+//  OCR3AL = 50;  // = (16000000) / 64 / 5000  ->  50   This is  clock_frequency / prescaler / desired_frequency  ( 5 KHz, 0.2ms)
+//  OCR3AL = 25;  // = (16000000) / 64 / 10000 ->  25   This is  clock_frequency / prescaler / desired_frequency  (10 kHz, 0.1ms)
+  OCR3AL = INTERRUPT_PERIOD; 
+  
+  // enable timer compare interrupt
+  TIMSK3 = (1 << OCIE3A);
+  
+  // turn on mode 4 (CTC mode) (up to OCR3A)
+  TCCR3B |= (1 << WGM32);
+  
+  // Set CS10 and CS12 bits for 64 prescaler
+  TCCR3B |= (1 << CS30) | (1 << CS31);
 
-    encoder_laststate = encoder_curstate;
+  // More information at
+  // http://medesign.seas.upenn.edu/index.php/Guides/MaEvArM-timers 
+  //
+}
+
+SIGNAL(TIMER3_COMPA_vect) 
+{  
+  computeEncoder();
 }
