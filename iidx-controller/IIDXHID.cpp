@@ -38,9 +38,27 @@ const char* const PROGMEM LEDString_07 = "Misc button 1";
 const char* const PROGMEM LEDString_08 = "Misc button 2";
 const char* const PROGMEM LEDString_09 = "Misc button 3";
 const char* const PROGMEM LEDString_10 = "Misc button 4";
+#if NO_SENSITIVITY == 0
 const char* const PROGMEM TTString = "TT Sensitivity";
+#endif
 
-const char* String_indiv[] = { LEDString_10, LEDString_09, LEDString_08, LEDString_07, LEDString_06, LEDString_05, LEDString_04, LEDString_03, LEDString_02, LEDString_01, LEDString_00, TTString };
+const char* String_indiv[] = { 
+    LEDString_10, 
+    LEDString_09, 
+    LEDString_08, 
+    LEDString_07, 
+    LEDString_06, 
+    LEDString_05, 
+    LEDString_04, 
+    LEDString_03, 
+    LEDString_02, 
+    LEDString_01, 
+    LEDString_00
+#if NO_SENSITIVITY == 0
+    ,TTString
+#endif
+};
+
 uint8_t STRING_ID_Count = 12;
 
 static const uint8_t PROGMEM hid_report[] = {
@@ -82,7 +100,7 @@ static const uint8_t PROGMEM hid_report[] = {
     0xc0,                            //   END_COLLECTION
     /* Encoder END*/
 
-    #if NO_SENSITIVITY == 0
+#if NO_SENSITIVITY == 0
     /* Turntable sensitivity input */
     0x05, 0x0a,                      //   USAGE_PAGE (Ordinals)
     0x15, 0x00,                      //   LOGICAL_MINIMUM (0)
@@ -95,7 +113,7 @@ static const uint8_t PROGMEM hid_report[] = {
     0x91, 0x02,                      //     OUTPUT (Data,Var,Abs)
     0xc0,                            //   END_COLLECTION
     /* Turntable sensitivity input END */
-    #endif
+#endif
 
     0x85, 0x04,                      //   REPORT_ID (4)
 
@@ -172,11 +190,11 @@ int IIDXHID_::getInterface(byte* interface_count) {
 }
 
 int IIDXHID_::getDescriptor(USBSetup& setup) {
-    #if KONAMI_SPOOF == 1  
+#if KONAMI_SPOOF == 1  
     if (setup.wValueH == USB_DEVICE_DESCRIPTOR_TYPE) {
         return USB_SendControl(TRANSFER_PGM, (const uint8_t*)&USB_DeviceDescriptorIAD, sizeof(USB_DeviceDescriptorIAD));
     }
-    #endif
+#endif
     if (setup.wValueH == USB_STRING_DESCRIPTOR_TYPE) {
         if (setup.wValueL == IPRODUCT) {
             return USB_SendStringDescriptor(String_Product, strlen(String_Product), 0);
@@ -226,7 +244,7 @@ bool IIDXHID_::setup(USBSetup& setup) {
                     lastHidUpdate = millis();
                     // No need to write lights or update lightmode here (for autoswitch), main loop() will take care of it
                 }
-                #if NO_SENSITIVITY == 0
+#if NO_SENSITIVITY == 0
                 else if (usb_data[0] == 5) {
                     tt_sensitivity = usb_data[1];
 
@@ -235,8 +253,7 @@ bool IIDXHID_::setup(USBSetup& setup) {
                         tt_sensitivity = 9;
                     }
                 }
-                #endif
-
+#endif
                 return true;
             }
         }
