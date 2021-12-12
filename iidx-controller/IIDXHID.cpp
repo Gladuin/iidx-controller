@@ -21,7 +21,7 @@ const DeviceDescriptor PROGMEM USB_DeviceDescriptorIAD = D_DEVICE(0xEF, 0x02, 0x
 const char* const PROGMEM String_Manufacturer = "Konami Amusement";
 const char* const PROGMEM String_Product = "beatmania IIDX controller premium model";
 #else
-const char* const PROGMEM String_Manufacturer = "gladuin";
+const char* const PROGMEM String_Manufacturer = MF_NAME;
 const char* const PROGMEM String_Product = "IIDX Controller";
 #endif
 

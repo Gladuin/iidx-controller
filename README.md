@@ -20,13 +20,25 @@ LEDs:
 
 Encoder:
  - The encoder's phase wires can be connected to any digital data pins.
- - Set the PPR in `iidx-controller/config.h'.
- 
-Sensitivity:
- - Disabled by default, enable by setting `NO_SENSITIVITY` to `1` in `iidx-controller/config.h`.
- - Settable in spice, or change `tt_sensitivity` in `iidx-controller/iidx-controller.ino`.
-   - You can pick values from 0 to 9 for `tt_sensitivity`.
+ - Set `ENCODER_PPR` in `iidx-controller/config.h' to the PPR of your encoder.
 
+Manufacturer name:
+ - By setting `MF_NAME` in `iidx-controller/config.h`, you can change the manufacturer name of your controller.
+ - You can change this to whatever you'd like, such as your name.
+ 
+Spoof Konami official controller:
+ - Set `KONAMI_SPOOF` to `1` to spoof the manufacturer (thus also ignoring `MF_NAME`) and product name of the beatmania IIDX controller premium model.
+ - Useful for when you want to play beatmania Infinitas.
+   
+Increments per full turn:
+ - The value here sets the number of increments required to reach a full 360° turn.
+ - Set `INCREMENTS_PER_FULL_TURN` in `iidx-controller/config.h` to one of the values listed there.
+ - The sensitivity setting interferes with this, it's recommended you leave it disabled.  
+
+Sensitivity:
+ - Disabled by default, enable by setting `NO_SENSITIVITY` to `0` in `iidx-controller/config.h`.
+ - More info in the `HID Sensitivity` section.
+ 
 LED mode switching:
  - Hold the last button in the button array, and then tap the first button in the button array to switch modes.
  - The LED mode rotation is as follows:
@@ -38,7 +50,7 @@ LED mode switching:
 Info:
  - Pinouts are available in `iidx-controller/config.h`, you can edit them there if necessary.
  - Leonardo pinout (what the numbers in the codes pinout arrays mean) at the bottom of this page.
-
+ 
 # HID Sensitivity
 In spice, select `Beatmania IIDX` and go to the `Lights` tab. Scroll down until you see `Turntable P1 Resistance` and click the `Bind` button.  
 For `Device` select your Arduino, and for `Light Control` select `TT Sensitivity`.
