@@ -44,7 +44,7 @@ const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 // for example, set to 25  for 0.1ms (10kHz) on a 16MHz processor: (16000000L / 64 / 10000 -> 25)
 #define INTERRUPT_PERIOD 25
 
-/* MISC OPTIONS */ 
+/* MISC OPTIONS */
 
 // Set the ability to set sensitivity via spicetools
 // Enabling this (or changing tt_sensitivity) screws with INCREMENTS_PER_FULL_TURN, so keep it disabled if you wish to use that.

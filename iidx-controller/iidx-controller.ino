@@ -27,43 +27,43 @@ volatile unsigned int g_encoderValueVL = 0;
 volatile byte g_encoderStVL;
 
 uint32_t last_report = 0;
-  
+
 void initEncoder() {
     pinMode(encoder_pin0, INPUT_PULLUP);
     pinMode(encoder_pin1, INPUT_PULLUP);
-    
+
     byte eA = !IO_READ(encoder_pin0);
     byte eB = !IO_READ(encoder_pin1);
     g_encoderStVL = eB<<1 | eA;
-    
+
     setupTimerInterrupt();
 }
 
 void computeEncoder() {
     byte eA = !IO_READ(encoder_pin0);
     byte eB = !IO_READ(encoder_pin1);
-    
+
     byte st = ((byte)eB<<1) | (byte)eA;
-    
+
     byte encoderSt = g_encoderStVL;
-    
+
     if (encoderSt != st) {
         bool wentDown = (!encoderSt && (st == 2));
         bool wentUp = (!encoderSt && (st == 1));
-    
+
         if (wentDown) g_encoderValueVL--;
         if (wentUp) g_encoderValueVL++;
-      
+
         g_encoderStVL = st;
     }
 }
 
-int encoder_delta() { 
+int encoder_delta() {
     unsigned int v = g_encoderValueVL;  // put in a local var to avoid multiple reads of a volatile var
     int d = v - g_encoderValue;
     g_encoderValue = v;
-    
-    return d; 
+
+    return d;
 }
 
 void setup() {
@@ -73,18 +73,18 @@ void setup() {
         buttons[i].attach(button_pins[i], INPUT_PULLUP);
         buttons[i].interval(MS_DEBOUNCE);
     }
-    
-    // Encoder setup 
+
+    // Encoder setup
     initEncoder();
-    
+
     // LED startup animation and setup
     for (int i = 0; i < sizeof(led_pins); i++) {
         pinMode(led_pins[i], OUTPUT);
         digitalWrite(led_pins[i], HIGH);
     }
-    
+
     delay(200);
-    
+
     for (int i = 0; i < sizeof(led_pins); i++) {
         digitalWrite(led_pins[i], LOW);
     }
@@ -109,7 +109,7 @@ void loop() {
         buttons[i].update();
         button_state_array[i] = buttons[i].read();
     }
-  
+
     // Read from array and convert to bitfield
     for (int i = 0; i < sizeof(button_pins); i++) {
         int button_value = button_state_array[i];
@@ -132,11 +132,11 @@ void loop() {
         encoder_cooldown--;
         tt_delta = 0;
     }
-  
+
     if (tt_delta >= ADJUSTED_PPR / 360 || tt_delta <= -ADJUSTED_PPR / 360) {
         tt_pos += tt_delta * tt_lookup[tt_sensitivity];
     }
-  
+
     // Limit the encoder from 0 to ADJUSTED_PPR
     if (tt_pos >= ADJUSTED_PPR) {
         tt_pos = 0;
@@ -177,29 +177,29 @@ void setupTimerInterrupt() {
     TCCR3A = 0; // Set entire TCCR3A register to 0
     TCCR3B = 0; // Same for TCCR3B
     TCNT3  = 0; // Initialize counter value to 0
-    
-    // Set compare match register (write to the high bit first) 
+
+    // Set compare match register (write to the high bit first)
     OCR3AH = 0;
-    
+
     // Set compare match register for particular frequency increments
     //  OCR3AL = 133; // = (16000000) / 64 / 2000  -> 133   This is  clock_frequency / prescaler / desired_frequency  ( 2 KHz, 0.5ms)
     //  OCR3AL = 50;  // = (16000000) / 64 / 5000  ->  50   This is  clock_frequency / prescaler / desired_frequency  ( 5 KHz, 0.2ms)
     //  OCR3AL = 25;  // = (16000000) / 64 / 10000 ->  25   This is  clock_frequency / prescaler / desired_frequency  (10 kHz, 0.1ms)
-    OCR3AL = INTERRUPT_PERIOD; 
-    
+    OCR3AL = INTERRUPT_PERIOD;
+
     // Enable timer compare interrupt
     TIMSK3 = (1 << OCIE3A);
-    
+
     // Turn on mode 4 (CTC mode) (up to OCR3A)
     TCCR3B |= (1 << WGM32);
-    
+
     // Set CS10 and CS12 bits for 64 prescaler
     TCCR3B |= (1 << CS30) | (1 << CS31);
-    
+
     /* More information at
        http://medesign.seas.upenn.edu/index.php/Guides/MaEvArM-timers */
 }
 
-SIGNAL (TIMER3_COMPA_vect) {  
+SIGNAL (TIMER3_COMPA_vect) {
     computeEncoder();
 }

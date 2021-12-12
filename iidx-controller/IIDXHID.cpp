@@ -42,17 +42,17 @@ const char* const PROGMEM LEDString_10 = "Misc button 4";
 const char* const PROGMEM TTString = "TT Sensitivity";
 #endif
 
-const char* String_indiv[] = { 
-    LEDString_10, 
-    LEDString_09, 
-    LEDString_08, 
-    LEDString_07, 
-    LEDString_06, 
-    LEDString_05, 
-    LEDString_04, 
-    LEDString_03, 
-    LEDString_02, 
-    LEDString_01, 
+const char* String_indiv[] = {
+    LEDString_10,
+    LEDString_09,
+    LEDString_08,
+    LEDString_07,
+    LEDString_06,
+    LEDString_05,
+    LEDString_04,
+    LEDString_03,
+    LEDString_02,
+    LEDString_01,
     LEDString_00
 #if NO_SENSITIVITY == 0
     ,TTString
@@ -156,19 +156,19 @@ static bool SendControl(uint8_t d) {
 
 static bool USB_SendStringDescriptor(const char *string_P, uint8_t string_len, uint8_t flags) {
     bool pgm = flags & TRANSFER_PGM;
-    
+
     SendControl(2 + string_len * 2);
     SendControl(3);
-    
+
     for (uint8_t i = 0; i < string_len; i++) {
         bool r = SendControl(pgm ? pgm_read_byte(&string_P[i]) : string_P[i]);
         r &= SendControl(0); // high byte
-        
+
         if (!r) {
             return false;
         }
     }
-    
+
     return true;
 }
 
@@ -179,18 +179,18 @@ IIDXHID_::IIDXHID_(void) : PluggableUSBModule(1, 1, epType) {
 
 int IIDXHID_::getInterface(byte* interface_count) {
     *interface_count += 1;
-    
+
     HIDDescriptor hid_interface = {
         D_INTERFACE(pluggedInterface, 1, USB_DEVICE_CLASS_HUMAN_INTERFACE, HID_SUBCLASS_NONE, HID_PROTOCOL_NONE),
         D_HIDREPORT(sizeof(hid_report)),
         D_ENDPOINT(USB_ENDPOINT_IN(pluggedEndpoint), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 0x01)
     };
-    
+
     return USB_SendControl(0, &hid_interface, sizeof(hid_interface));
 }
 
 int IIDXHID_::getDescriptor(USBSetup& setup) {
-#if KONAMI_SPOOF == 1  
+#if KONAMI_SPOOF == 1
     if (setup.wValueH == USB_DEVICE_DESCRIPTOR_TYPE) {
         return USB_SendControl(TRANSFER_PGM, (const uint8_t*)&USB_DeviceDescriptorIAD, sizeof(USB_DeviceDescriptorIAD));
     }
