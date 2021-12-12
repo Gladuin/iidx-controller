@@ -47,6 +47,7 @@ const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 /* MISC OPTIONS */ 
 
 // Set the ability to set sensitivity via spicetools
+// Enabling this (or changing tt_sensitivity) screws with INCREMENTS_PER_FULL_TURN, so keep it disabled if you wish to use that.
 #define NO_SENSITIVITY 1
 
 // Set the ability to spoof the beatmania IIDX controller premium model (enable this if you plan on playing infinitas)

@@ -133,7 +133,7 @@ void loop() {
         tt_delta = 0;
     }
   
-    if (tt_delta >= ADJUSTED_PPR / 360 || tt_delta <= -ADJUSTED_PPR / 360){
+    if (tt_delta >= ADJUSTED_PPR / 360 || tt_delta <= -ADJUSTED_PPR / 360) {
         tt_pos += tt_delta * tt_lookup[tt_sensitivity];
     }
   

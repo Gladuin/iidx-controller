@@ -20,13 +20,12 @@ LEDs:
 
 Encoder:
  - The encoder's phase wires can be connected to any digital data pins.
- - Set the PPR in `iidx-controller/IIDXHID.h`, line `5`.
+ - Set the PPR in `iidx-controller/config.h'.
  
 Sensitivity:
- - Settable in Spice
-
-Turntable Trigger Deadzone:
- - Configurable in config.h `tt_deadzone_angle`.
+ - Disabled by default, enable by setting `NO_SENSITIVITY` to `1` in `iidx-controller/config.h`.
+ - Settable in spice, or change `tt_sensitivity` in `iidx-controller/iidx-controller.ino`.
+   - You can pick values from 0 to 9 for `tt_sensitivity`.
 
 LED mode switching:
  - Hold the last button in the button array, and then tap the first button in the button array to switch modes.
@@ -38,8 +37,7 @@ LED mode switching:
 
 Info:
  - Pinouts are available in `iidx-controller/config.h`, you can edit them there if necessary.
- - If changing the number of buttons / LEDs, change the value in `iidx-controller/IIDXHID.h` (line `3` and `4` respectively) to the new number of buttons / LEDs.
- - Leonardo pinout (what the numbers in the code's pinout arrays mean) at the bottom of this page.
+ - Leonardo pinout (what the numbers in the codes pinout arrays mean) at the bottom of this page.
 
 # HID Sensitivity
 In spice, select `Beatmania IIDX` and go to the `Lights` tab. Scroll down until you see `Turntable P1 Resistance` and click the `Bind` button.  
@@ -51,13 +49,10 @@ You'll then be able to set the turntable sensitivity via the resistance menu on 
 
 _NOTE: I haven't actually been able to test this, since I have a 60hz screen and can't boot into lightning mode. Please report any issues you encounter in the issues section._
 
-_NOTE2: 9 is normal, 1 means 1 full turn IRL equals to 10 full turns in software.
- - Despite the name "Sensitivity", the value is from the "Turntable Resistence (or Turntable Weight)" setting found on lightning turntables.
-
 # Thanks
 - Huge thanks to [CrazyRedMachine](https://github.com/CrazyRedMachine) for helping me out when I got stuck, and for their [SoundVoltexIO](https://github.com/CrazyRedMachine/SoundVoltexIO) repository.
 - John Lluch's [Timer interrupt based Encoder library](https://github.com/John-Lluch/Encoder)
-- The digitalWriteFast library
+- The [digitalWriteFast library](https://github.com/watterott/Arduino-Libs/tree/master/digitalWriteFast)
 
 # Leonardo pinout
  
