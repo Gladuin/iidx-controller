@@ -40,7 +40,7 @@ const char* const PROGMEM LEDString_09 = "Misc button 3";
 const char* const PROGMEM LEDString_10 = "Misc button 4";
 const char* const PROGMEM TTString = "TT Sensitivity";
 
-const char* String_indiv[] = { LEDString_00, LEDString_01, LEDString_02, LEDString_03, LEDString_04, LEDString_05, LEDString_06, LEDString_07, LEDString_08, LEDString_09, LEDString_10, TTString };
+const char* String_indiv[] = { LEDString_10, LEDString_09, LEDString_08, LEDString_07, LEDString_06, LEDString_05, LEDString_04, LEDString_03, LEDString_02, LEDString_01, LEDString_00, TTString };
 uint8_t STRING_ID_Count = 12;
 
 static const uint8_t PROGMEM hid_report[] = {
@@ -108,17 +108,17 @@ static const uint8_t PROGMEM hid_report[] = {
     0xa1, 0x02,                      //   COLLECTION (Logical)
     0x89, 0x04,                      //     STRING_MINIMUM (4)
     0x99, 0x0e,                      //     STRING_MAXIMUM (14)
-    0x09, 0x01,                      //     USAGE (Instance 1)
-    0x09, 0x02,                      //     USAGE (Instance 2)
-    0x09, 0x03,                      //     USAGE (Instance 3)
-    0x09, 0x04,                      //     USAGE (Instance 4)
-    0x09, 0x05,                      //     USAGE (Instance 5)
-    0x09, 0x06,                      //     USAGE (Instance 6)
-    0x09, 0x07,                      //     USAGE (Instance 7)
-    0x09, 0x08,                      //     USAGE (Instance 8)
-    0x09, 0x09,                      //     USAGE (Instance 9)
-    0x09, 0x0a,                      //     USAGE (Instance 10)
     0x09, 0x0b,                      //     USAGE (Instance 11)
+    0x09, 0x0a,                      //     USAGE (Instance 10)
+    0x09, 0x09,                      //     USAGE (Instance 9)
+    0x09, 0x08,                      //     USAGE (Instance 8)
+    0x09, 0x07,                      //     USAGE (Instance 7)
+    0x09, 0x06,                      //     USAGE (Instance 6)
+    0x09, 0x05,                      //     USAGE (Instance 5)
+    0x09, 0x04,                      //     USAGE (Instance 4)
+    0x09, 0x03,                      //     USAGE (Instance 3)
+    0x09, 0x02,                      //     USAGE (Instance 2)
+    0x09, 0x01,                      //     USAGE (Instance 1)
     0x91, 0x02,                      //     OUTPUT (Data,Var,Abs)
     0xc0,                            //   END_COLLECTION
     /* LEDs END */
