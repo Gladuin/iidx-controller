@@ -25,11 +25,11 @@ Encoder:
 Manufacturer name:
  - By setting `MF_NAME` in `iidx-controller/config.h`, you can change the manufacturer name of your controller.
  - You can change this to whatever you'd like, such as your name.
- 
+
 Spoof Konami official controller:
  - Set `KONAMI_SPOOF` to `1` to spoof the manufacturer (thus also ignoring `MF_NAME`) and product name of the beatmania IIDX controller premium model.
  - Useful for when you want to play beatmania Infinitas.
-   
+
 Increments per full turn:
  - The value here sets the number of increments required to reach a full 360° turn.
  - Set `INCREMENTS_PER_FULL_TURN` in `iidx-controller/config.h` to one of the values listed there.
@@ -38,7 +38,7 @@ Increments per full turn:
 Sensitivity:
  - Disabled by default, enable by setting `NO_SENSITIVITY` to `0` in `iidx-controller/config.h`.
  - More info in the `HID Sensitivity` section.
- 
+
 LED mode switching:
  - Hold the last button in the button array, and then tap the first button in the button array to switch modes.
  - The LED mode rotation is as follows:
@@ -67,5 +67,5 @@ _NOTE: I haven't actually been able to test this, since I have a 60hz screen and
 - The [digitalWriteFast library](https://github.com/watterott/Arduino-Libs/tree/master/digitalWriteFast)
 
 # Leonardo pinout
- 
+
 ![Leo pinout](https://raw.githubusercontent.com/Bouni/Arduino-Pinout/master/Arduino%20Leonardo%20Pinout.png)
