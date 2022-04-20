@@ -19,8 +19,8 @@ LEDs:
  - Negative terminal to GND.
 
 Encoder:
- - The encoder's phase wires can be connected to any digital data pins.
- - Set `ENCODER_PPR` in `iidx-controller/config.h' to the PPR of your encoder.
+ - Connect the encoder's wires to the corresponding pins.
+ - Set `ENCODER_PPR` in `iidx-controller/config.h` to the PPR of your encoder.
 
 Manufacturer name:
  - By setting `MF_NAME` in `iidx-controller/config.h`, you can change the manufacturer name of your controller.
@@ -33,10 +33,10 @@ Spoof Konami official controller:
 Increments per full turn:
  - The value here sets the number of increments required to reach a full 360° turn.
  - Set `INCREMENTS_PER_FULL_TURN` in `iidx-controller/config.h` to one of the values listed there.
- - The sensitivity setting interferes with this, it's recommended you leave it disabled.  
 
 Sensitivity:
- - Disabled by default, enable by setting `NO_SENSITIVITY` to `0` in `iidx-controller/config.h`.
+ - Recommended to leave disabled, since it interferes with the "Increments per full turn" setting.
+ - Enable by setting `NO_SENSITIVITY` to `0` in `iidx-controller/config.h`.
  - More info in the `HID Sensitivity` section.
 
 LED mode switching:
