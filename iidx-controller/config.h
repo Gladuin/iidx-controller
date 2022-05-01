@@ -1,3 +1,6 @@
+#ifndef _CONFIG_H_
+#define _CONFIG_H_
+
 /* PINOUT */
 // Pins where the LEDs are connected to
 const uint8_t led_pins[] = {
@@ -75,4 +78,6 @@ const uint8_t encoder_pin1 = 1;  // white wire (b phase)
     #define IO_WRITE(X, Y) digitalWrite(X, Y)
     #define IO_READ(X) digitalRead(X)
     #define IO_MODE(X, Y) pinMode(X, Y)
+#endif
+
 #endif
