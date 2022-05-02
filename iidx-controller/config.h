@@ -3,7 +3,7 @@
 
 /* PINOUT */
 // Pins where the LEDs are connected to
-const uint8_t led_pins[] = {
+static const uint8_t led_pins[] = {
     2,    // button 1 led
     4,    // button 2 led
     6,    // button 3 led
@@ -18,7 +18,7 @@ const uint8_t led_pins[] = {
 };
 
 // Pins where the buttons are connected to
-const uint8_t button_pins[] = {
+static const uint8_t button_pins[] = {
     3,    // button 1
     5,    // button 2
     7,    // button 3
@@ -33,15 +33,15 @@ const uint8_t button_pins[] = {
 };
 
 // Pins where the encoder is connected to
-const uint8_t encoder_pin0 = 0;  // green wire (a phase)
-const uint8_t encoder_pin1 = 1;  // white wire (b phase)
+static const uint8_t encoder_pin0 = 0;  // green wire (a phase)
+static const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 
 /* OPTIONS */
 // Your encoder pulses per rotation
 #define ENCODER_PPR 600
 
-// The manufacturer name of this controller
-#define MF_NAME "username"
+// The manufacturer name of this controller (leave the L in front of the ")
+#define MF_NAME L"username"
 
 // Set the ability to spoof the beatmania IIDX controller premium model (enable this if you plan on playing infinitas)
 #define KONAMI_SPOOF 0
@@ -57,8 +57,8 @@ const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 // Button debouncing time, make this higher if you experience bouncing in your buttons
 #define MS_DEBOUNCE 5
 
-// Amount of ms to wait before sending another report
-#define REPORT_DELAY 1000
+// Period of time between polling events on the endpoints (in miliseconds)
+#define POLLING_INTERVAL 1
 
 // Enable faster read/write for encoder handling
 #define READFAST 1
@@ -70,7 +70,7 @@ const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 #define INTERRUPT_PERIOD 25
 
 #if READFAST == 1
-    #include "digitalWriteFast.h"
+    #include "src/digitalWriteFast.h"
     #define IO_WRITE(X, Y) digitalWriteFast(X, Y)
     #define IO_READ(X) digitalReadFast(X)
     #define IO_MODE(X, Y) pinModeFast(X, Y)
