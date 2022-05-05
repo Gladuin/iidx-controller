@@ -17,9 +17,9 @@
 
 
 typedef struct {
-    int8_t report_id;
-    int16_t button_status;
-    int16_t turntable_position;
+    uint8_t report_id;
+    uint16_t button_status;
+    uint16_t turntable_position;
 } input_data_struct;
 
 typedef struct {

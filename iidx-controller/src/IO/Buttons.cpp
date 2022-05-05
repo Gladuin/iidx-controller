@@ -7,7 +7,7 @@
 #include "../../config.h"
 
 Bounce buttons[sizeof(button_pins)];
-int16_t button_status;
+uint16_t button_status;
 
 void initialise_buttons() {
     for (int i = 0; i < sizeof(button_pins); i++) {
@@ -17,17 +17,17 @@ void initialise_buttons() {
     }
 }
 
-int16_t get_button_state() {
+uint16_t get_button_state() {
     for (int i = 0; i < sizeof(button_pins); i++) {
         buttons[i].update();
 
         switch (buttons[i].read()) {
             case LOW:
-                button_status |= (int16_t)1 << i;
+                button_status |= (uint16_t)1 << i;
                 break;
 
             case HIGH:
-                button_status &= ~((int16_t)1 << i);
+                button_status &= ~((uint16_t)1 << i);
                 break;
         }
     }

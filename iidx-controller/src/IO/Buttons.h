@@ -9,7 +9,7 @@
     
     // Function prototypes
     EXTERNC void initialise_buttons();
-    EXTERNC int16_t get_button_state();
+    EXTERNC uint16_t get_button_state();
     
     #undef EXTERNC
 
