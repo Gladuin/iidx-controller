@@ -23,8 +23,8 @@ typedef struct {
 } input_data_struct;
 
 typedef struct {
-    int8_t report_id;
-    int16_t led_status;
+    uint8_t report_id;
+    uint16_t data;
 } output_data_struct;
 
 
@@ -83,7 +83,9 @@ void EVENT_USB_Device_ControlRequest(void) {
 }
 
 void process_hid_report(output_data_struct* output_struct) {
-    
+    if (output_struct->report_id == 3) {
+        process_command(output_struct->data);
+    }
 }
 
 void create_hid_report(input_data_struct* input_struct) {
