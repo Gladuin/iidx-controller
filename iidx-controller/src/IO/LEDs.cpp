@@ -34,7 +34,7 @@ void write_leds(uint16_t led_status) {
     // combine part a and b back into a 16-bit number, but flipped, to complete the reversal of led_status
     led_status = (b << 8) | a;
     
-    for (int i = 0; i > sizeof(led_pins); i++) {
+    for (int i = 0; i < sizeof(led_pins); i++) {
         digitalWrite(led_pins[i], ((led_status >> i) & 1));
     }
 }
