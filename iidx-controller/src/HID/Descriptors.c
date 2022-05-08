@@ -3,7 +3,7 @@
 #include <avr/pgmspace.h>
 
 #include "LUFAConfig.h"
-#include "../../Config.h"
+#include "../../config.h"
 
 #include <LUFA/LUFA/Drivers/USB/USB.h>
 
@@ -11,7 +11,6 @@
 
 
 // Macros
-#define ADJUSTED_PPR ((int)((float)ENCODER_PPR * ((float)255 / (float)INCREMENTS_PER_FULL_TURN)))
 #define BUTTON_PADDING (8 - (sizeof(button_pins) % 8))
 #define LED_PADDING (8 - (sizeof(led_pins) % 8))
 
@@ -65,7 +64,7 @@ const USB_Descriptor_HIDReport_Datatype_t PROGMEM generic_report[] = {
     HID_RI_USAGE_PAGE(8, 1),
     HID_RI_USAGE(8, 1),
     HID_RI_LOGICAL_MINIMUM(8, 8),
-    HID_RI_LOGICAL_MAXIMUM(16, ENCODER_PPR),
+    HID_RI_LOGICAL_MAXIMUM(16, ADJUSTED_PPR),
     HID_RI_REPORT_SIZE(8, 16),
     HID_RI_REPORT_COUNT(8, 1),
     HID_RI_COLLECTION(8, 0),

@@ -54,30 +54,19 @@ static const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 #define NO_SENSITIVITY 1
 
 /* OPTIONS YOU PROBABLY DON'T HAVE TO TOUCH */
+// Adjusted PPR macro for use with other stuff
+#define ADJUSTED_PPR ((int)((float)ENCODER_PPR * ((float)255 / (float)INCREMENTS_PER_FULL_TURN)))
+
 // Button debouncing time, make this higher if you experience bouncing in your buttons
 #define MS_DEBOUNCE 5
 
 // Period of time between polling events on the endpoints (in miliseconds)
 #define POLLING_INTERVAL 1
 
-// Enable faster read/write for encoder handling
-#define READFAST 1
-
 // This is (cpu_clock_frequency / prescaler / desired_interrupt_frequency)
 // for example, set to 133 for 0.5ms (2kHz)  on a 16MHz processor: (16000000L / 64 / 2000  -> 133)
 // for example, set to 50  for 0.2ms (5kHz)  on a 16MHz processor: (16000000L / 64 / 5000  -> 50)
 // for example, set to 25  for 0.1ms (10kHz) on a 16MHz processor: (16000000L / 64 / 10000 -> 25)
 #define INTERRUPT_PERIOD 25
-
-#if READFAST == 1
-    #include "src/digitalWriteFast.h"
-    #define IO_WRITE(X, Y) digitalWriteFast(X, Y)
-    #define IO_READ(X) digitalReadFast(X)
-    #define IO_MODE(X, Y) pinModeFast(X, Y)
-#else
-    #define IO_WRITE(X, Y) digitalWrite(X, Y)
-    #define IO_READ(X) digitalRead(X)
-    #define IO_MODE(X, Y) pinMode(X, Y)
-#endif
 
 #endif

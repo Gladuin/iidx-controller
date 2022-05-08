@@ -13,6 +13,7 @@
 #include <LUFA/LUFA/Platform/Platform.h>
 
 #include "../IO/Buttons.h"
+#include "../IO/Encoder.h" 
 #include "Descriptors.h"
 
 
@@ -91,7 +92,7 @@ void process_hid_report(output_data_struct* output_struct) {
 void create_hid_report(input_data_struct* input_struct) {
     input_struct->report_id = 5;
     input_struct->button_status = get_button_state();
-    input_struct->turntable_position = 0;
+    input_struct->turntable_position = get_encoder_state();
 }
 
 void HID_task(void) {
