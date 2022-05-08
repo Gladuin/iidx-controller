@@ -14,6 +14,7 @@
 
 #include "../IO/Buttons.h"
 #include "../IO/Encoder.h" 
+#include "../IO/LEDs.h"
 #include "Descriptors.h"
 
 
@@ -84,8 +85,11 @@ void EVENT_USB_Device_ControlRequest(void) {
 }
 
 void process_hid_report(output_data_struct* output_struct) {
-    if (output_struct->report_id == 3) {
-        process_command(output_struct->data);
+    switch (output_struct->report_id) {
+        case 3:
+            process_command(output_struct->data);
+        case 4:
+            write_leds(output_struct->data);
     }
 }
 
