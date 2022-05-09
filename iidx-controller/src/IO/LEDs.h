@@ -9,7 +9,7 @@
     
     // Function prototypes
     EXTERNC void initialise_leds();
-    EXTERNC void write_leds(uint16_t);
+    EXTERNC void write_leds(uint16_t, bool);
     
     #undef EXTERNC
 

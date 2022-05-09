@@ -89,7 +89,7 @@ void process_hid_report(output_data_struct* output_struct) {
         case 3:
             process_command(output_struct->data);
         case 4:
-            write_leds(output_struct->data);
+            write_leds(output_struct->data, true);
     }
 }
 
