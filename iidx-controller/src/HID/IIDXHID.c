@@ -2,6 +2,8 @@
 
 #include "IIDXHID.h"
 
+#include <Arduino.h>
+
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/power.h>
@@ -18,6 +20,8 @@
 #include "Descriptors.h"
 
 
+unsigned long last_led_update;
+
 typedef struct {
     uint8_t report_id;
     uint16_t button_status;
@@ -29,6 +33,10 @@ typedef struct {
     uint16_t data;
 } output_data_struct;
 
+
+unsigned long get_last_led_update() {
+    return last_led_update;
+}
 
 void setup_hardware(void) {
 	// Disable watchdog if enabled by bootloader/fuses
@@ -89,6 +97,7 @@ void process_hid_report(output_data_struct* output_struct) {
         case 3:
             process_command(output_struct->data);
         case 4:
+            last_led_update = millis();
             write_leds(output_struct->data, true);
     }
 }

@@ -20,6 +20,10 @@ void setup() {
 }
 
 void loop() {
+    if ((millis() - get_last_led_update()) > 3000) {
+        write_leds(get_button_state(), false);
+    }
+
     HID_task();
     USB_USBTask();
 }

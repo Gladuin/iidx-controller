@@ -5,6 +5,7 @@
     #ifdef __cplusplus
     extern "C" {
     #endif
+        unsigned long get_last_led_update();
         void setup_hardware(void);
         void HID_task(void);
     #ifdef __cplusplus
