@@ -49,13 +49,13 @@ class GUI_CLASS(threading.Thread):
         ttk.Separator(mainframe, orient="horizontal").grid(column = 0, row = 1, columnspan = 2, sticky = (E, W))
 
         ttk.Label(mainframe, text = "Controller mode").grid(column = 0, row = 2, sticky = W)
-        controllermode = ttk.Combobox(mainframe, values = ["test", "test"])
+        controllermode = ttk.Combobox(mainframe, values = ["Joystick", "Keyboard"])
         controllermode.grid(column = 1, row = 2, sticky = W)
         controllermode.state(["!disabled", "readonly"])
         controllermode.current(0)
 
         ttk.Label(mainframe, text = "LED mode").grid(column = 0, row = 3, sticky = W)
-        ledmode = ttk.Combobox(mainframe, values = ["test", "test"])
+        ledmode = ttk.Combobox(mainframe, values = ["Reactive + HID", "HID", "Reactive", "Off"])
         ledmode.grid(column = 1, row = 3, sticky = W)
         ledmode.state(["!disabled", "readonly"])
         ledmode.current(0)
@@ -72,11 +72,11 @@ class GUI_CLASS(threading.Thread):
         ttk.Label(mainframe, text = "TT increments per full turn").grid(column = 0, row = 6, sticky = W)
         ttk.Entry(mainframe).grid(column = 1, row = 6, sticky = (E, W))
 
-        ttk.Label(mainframe, text = "Debounce time").grid(column = 0, row = 7, sticky = W)
+        ttk.Label(mainframe, text = "Debounce time (ms)").grid(column = 0, row = 7, sticky = W)
         ttk.Entry(mainframe).grid(column = 1, row = 7, sticky = (E, W))
 
-        ttk.Label(mainframe, text = "Polling rate").grid(column = 0, row = 8, sticky = W)
-        pollingrate = ttk.Combobox(mainframe, values = ["test", "test"])
+        ttk.Label(mainframe, text = "Polling rate (Hz)").grid(column = 0, row = 8, sticky = W)
+        pollingrate = ttk.Combobox(mainframe, values = ["1000", "500", "250", "125"])
         pollingrate.grid(column = 1, row = 8, sticky = W)
         pollingrate.state(["!disabled", "readonly"])
         pollingrate.current(0)
