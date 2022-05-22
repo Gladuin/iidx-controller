@@ -39,21 +39,9 @@ def send_config(controller_mode, led_mode, tt_mode, tt_inc, debounce_time, polli
         if send(0x0101) == None:
             return None
     
-    match controller_mode:
-        case "Joystick":
-            send(0x1000)
-        case "Keyboard":
-            send(0x1001)
+    send(concat(0x10, controller_mode))
     
-    match led_mode:
-        case "Reactive + HID":
-            send(0x2000)
-        case "HID":
-            send(0x2001)
-        case "Reactive":
-            send(0x2002)
-        case "Off":
-            send(0x2003)
+    send(concat(0x20, led_mode))
     
     send(concat(0x30, int(tt_mode)))
     
@@ -104,17 +92,14 @@ class GUI_CLASS(threading.Thread):
 
         ttk.Separator(mainframe, orient="horizontal").grid(column = 0, row = 1, columnspan = 2, sticky = (E, W))
 
-        controller_mode_array = ["Joystick", "Keyboard"]
-        led_mode_array = ["Reactive + HID", "HID", "Reactive", "Off"]
-
         ttk.Label(mainframe, text = "Controller mode").grid(column = 0, row = 2, sticky = W)
-        controller_mode = ttk.Combobox(mainframe, values = controller_mode_array)
+        controller_mode = ttk.Combobox(mainframe, values = ["Joystick", "Keyboard"])
         controller_mode.grid(column = 1, row = 2, sticky = W)
         controller_mode.state(["!disabled", "readonly"])
         controller_mode.current(0)
 
         ttk.Label(mainframe, text = "LED mode").grid(column = 0, row = 3, sticky = W)
-        led_mode = ttk.Combobox(mainframe, values = led_mode_array)
+        led_mode = ttk.Combobox(mainframe, values = ["Reactive + HID", "HID", "Reactive", "Off"])
         led_mode.grid(column = 1, row = 3, sticky = W)
         led_mode.state(["!disabled", "readonly"])
         led_mode.current(0)
@@ -157,8 +142,8 @@ class GUI_CLASS(threading.Thread):
 
         ttk.Button(button_frame, text = "Reset controller", command = lambda:send(0xFF00)).grid(column = 0, row = 0, sticky = (E, W))
         ttk.Button(button_frame, text = "Save",
-                   command = lambda:send_config(controller_mode_array[controller_mode.current()],
-                                                led_mode_array[led_mode.current()],
+                   command = lambda:send_config(controller_mode.current(),
+                                                led_mode.current(),
                                                 tt_mode_var.get(),
                                                 tt_inc_var.get(),
                                                 debounce_time_var.get(),
@@ -167,8 +152,8 @@ class GUI_CLASS(threading.Thread):
                   ).grid(column = 2, row = 0, sticky = (E, W))
 
         ttk.Button(button_frame, text = "Apply",
-                   command = lambda:send_config(controller_mode_array[controller_mode.current()],
-                             led_mode_array[led_mode.current()],
+                   command = lambda:send_config(controller_mode.current(),
+                             led_mode.current(),
                              tt_mode_var.get(),
                              tt_inc_var.get(),
                              debounce_time_var.get(),
