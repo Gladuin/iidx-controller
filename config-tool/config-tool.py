@@ -28,10 +28,14 @@ def send(data):
     device.close()
     
 def validate_input(entry_input):
-    if entry_input.isdigit() == False and int(entry_input) > 255:
-        return False
-    elif entry_input == "":
+    if entry_input == "":
         return True
+    elif entry_input.isdigit() == False:
+        messagebox.showwarning(title = "Invalid input", message = "Only digits are allowed in the input box")
+        return False
+    elif int(entry_input) > 255:
+        messagebox.showwarning(title = "Invalid input", message = "Only numbers under or equal to 255\nare allowed in the input box")
+        return False
     else:
         return True
 
@@ -85,11 +89,16 @@ class GUI_CLASS(threading.Thread):
         
         validate_command = (self.root.register(validate_input), "%P")
         
+        tt_inc_var = StringVar()
+        tt_inc_var.set("72")
+        debounce_time_var = StringVar()
+        debounce_time_var.set("5")
+        
         ttk.Label(mainframe, text = "TT increments per full turn").grid(column = 0, row = 6, sticky = W)
-        ttk.Entry(mainframe, validate = "key", validatecommand = validate_command).grid(column = 1, row = 6, sticky = (E, W))
+        ttk.Entry(mainframe, validate = "key", validatecommand = validate_command, textvariable = tt_inc_var).grid(column = 1, row = 6, sticky = (E, W))
 
         ttk.Label(mainframe, text = "Debounce time (ms)").grid(column = 0, row = 7, sticky = W)
-        ttk.Entry(mainframe, validate = "key", validatecommand = validate_command).grid(column = 1, row = 7, sticky = (E, W))
+        ttk.Entry(mainframe, validate = "key", validatecommand = validate_command, textvariable = debounce_time_var).grid(column = 1, row = 7, sticky = (E, W))
 
         ttk.Label(mainframe, text = "Polling rate (Hz)").grid(column = 0, row = 8, sticky = W)
         pollingrate = ttk.Combobox(mainframe, values = ["1000", "500", "250", "125"])
