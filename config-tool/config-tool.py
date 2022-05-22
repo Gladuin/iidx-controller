@@ -32,12 +32,8 @@ def send(data):
     device.close()
 
 def send_config(controller_mode, led_mode, tt_mode, tt_inc, debounce_time, polling_rate, temporary_config):
-    if temporary_config:
-        if send(0x0100) == None:
-            return None
-    else:
-        if send(0x0101) == None:
-            return None
+    if send(concat(0x01, int(temporary_config))) == None:
+        return None
     
     send(concat(0x10, controller_mode))
     
