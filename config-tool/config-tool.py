@@ -195,5 +195,3 @@ while gui.is_alive():
         status_label.config(foreground = "red")
 
     time.sleep(1)
-
-exit()
