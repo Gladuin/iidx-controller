@@ -72,8 +72,8 @@ def validate_input(entry_input):
     elif entry_input.isdigit() == False:
         messagebox.showwarning(title = "Invalid input", message = "Only digits are allowed in the input box")
         return False
-    elif int(entry_input) > 255:
-        messagebox.showwarning(title = "Invalid input", message = "Only numbers under or equal to 255\nare allowed in the input box")
+    elif int(entry_input) > 255 or int(entry_input) < 1:
+        messagebox.showwarning(title = "Invalid input", message = "Only numbers between 1 and 255\nare allowed in the input box")
         return False
     else:
         return True
