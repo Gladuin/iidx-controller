@@ -18,7 +18,7 @@ def get_filtered_devices():
 def send(data):
     if len(get_filtered_devices()) == 0:
         messagebox.showwarning(title = "No controller", message = "Please connect a controller before\ntrying to send commands")
-        return None
+        return False
 
     device = get_filtered_devices()[0]
     device.open()
@@ -30,10 +30,11 @@ def send(data):
 
     device.send_output_report(report_data)
     device.close()
+    return True
 
 def send_config(controller_mode, led_mode, tt_mode, tt_inc, debounce_time, polling_rate, temporary_config):
-    if send(concat(0x01, int(temporary_config))) == None:
-        return None
+    if send(concat(0x01, int(temporary_config))) == False:
+        return False
     
     send(concat(0x10, controller_mode))
     
@@ -49,6 +50,8 @@ def send_config(controller_mode, led_mode, tt_mode, tt_inc, debounce_time, polli
     
     send(0x01FF) # config send end
     
+    return True
+
     
 def validate_input(entry_input):
     if entry_input == "":
