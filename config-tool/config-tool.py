@@ -7,6 +7,10 @@ from tkinter import messagebox
 
 from pywinusb import hid
 
+def concat(a, b):
+    # thx https://stackoverflow.com/a/50700078
+    return int(f"{a}{b}")
+
 def get_filtered_devices():
     filter = hid.HidDeviceFilter(vendor_id = 0x0001, product_id = 0x0001)
     return filter.get_devices()
@@ -26,6 +30,41 @@ def send(data):
 
     device.send_output_report(report_data)
     device.close()
+
+def send_config(controller_mode, led_mode, tt_mode, tt_inc, debounce_time, polling_rate, temporary_config):
+    if temporary_config:
+        if send(0x0100) == None:
+            return None
+    else:
+        if send(0x0101) == None:
+            return None
+    
+    match controller_mode:
+        case "Joystick":
+            send(0x1000)
+        case "Keyboard":
+            send(0x1001)
+    
+    match led_mode:
+        case "Reactive + HID":
+            send(0x2000)
+        case "HID":
+            send(0x2001)
+        case "Reactive":
+            send(0x2002)
+        case "Off":
+            send(0x2003)
+    
+    send(concat(0x30, int(tt_mode)))
+    
+    send(concat(0x40, int(tt_inc)))
+    
+    send(concat(0x50, int(debounce_time)))
+    
+    send(concat(0x60, round(((1 / int(polling_rate)) * 1000))))
+    
+    send(0x01FF) # config send end
+    
     
 def validate_input(entry_input):
     if entry_input == "":
@@ -64,10 +103,10 @@ class GUI_CLASS(threading.Thread):
         status_label.grid(column = 0, row = 0, columnspan = 2)
 
         ttk.Separator(mainframe, orient="horizontal").grid(column = 0, row = 1, columnspan = 2, sticky = (E, W))
-        
+
         controller_mode_array = ["Joystick", "Keyboard"]
         led_mode_array = ["Reactive + HID", "HID", "Reactive", "Off"]
-        
+
         ttk.Label(mainframe, text = "Controller mode").grid(column = 0, row = 2, sticky = W)
         controller_mode = ttk.Combobox(mainframe, values = controller_mode_array)
         controller_mode.grid(column = 1, row = 2, sticky = W)
@@ -89,24 +128,24 @@ class GUI_CLASS(threading.Thread):
         ttk.Radiobutton(radiobutton_frame, text = "Digital", variable = tt_mode_var, value = 1).grid(column = 1, row = 0, sticky = W)
 
         ttk.Separator(mainframe, orient="horizontal").grid(column = 0, row = 5, columnspan = 2, sticky = (E, W))
-        
+
         validate_command = (self.root.register(validate_input), "%P")
-        
+
         tt_inc_var = StringVar()
         tt_inc_var.set("72")
         debounce_time_var = StringVar()
         debounce_time_var.set("5")
-        
+
         ttk.Label(mainframe, text = "TT increments per full turn").grid(column = 0, row = 6, sticky = W)
         ttk.Entry(mainframe, validate = "key", validatecommand = validate_command, textvariable = tt_inc_var).grid(column = 1, row = 6, sticky = (E, W))
 
         ttk.Label(mainframe, text = "Debounce time (ms)").grid(column = 0, row = 7, sticky = W)
         ttk.Entry(mainframe, validate = "key", validatecommand = validate_command, textvariable = debounce_time_var).grid(column = 1, row = 7, sticky = (E, W))
 
-        pollingrate_array = ["1000", "500", "250", "125"]
+        polling_rate_array = ["1000", "500", "250", "125"]
 
         ttk.Label(mainframe, text = "Polling rate (Hz)").grid(column = 0, row = 8, sticky = W)
-        polling_rate = ttk.Combobox(mainframe, values = pollingrate_array)
+        polling_rate = ttk.Combobox(mainframe, values = polling_rate_array)
         polling_rate.grid(column = 1, row = 8, sticky = W)
         polling_rate.state(["!disabled", "readonly"])
         polling_rate.current(0)
@@ -117,8 +156,25 @@ class GUI_CLASS(threading.Thread):
         button_frame.grid(column = 0, row = 10, columnspan = 2, sticky = (N, W, E, S))
 
         ttk.Button(button_frame, text = "Reset controller", command = lambda:send(0xFF00)).grid(column = 0, row = 0, sticky = (E, W))
-        ttk.Button(button_frame, text = "Save").grid(column = 2, row = 0, sticky = (E, W))
-        ttk.Button(button_frame, text = "Apply").grid(column = 3, row = 0, sticky = (E, W))
+        ttk.Button(button_frame, text = "Save",
+                   command = lambda:send_config(controller_mode_array[controller_mode.current()],
+                                                led_mode_array[led_mode.current()],
+                                                tt_mode_var.get(),
+                                                tt_inc_var.get(),
+                                                debounce_time_var.get(),
+                                                polling_rate_array[polling_rate.current()],
+                                                False)
+                  ).grid(column = 2, row = 0, sticky = (E, W))
+
+        ttk.Button(button_frame, text = "Apply",
+                   command = lambda:send_config(controller_mode_array[controller_mode.current()],
+                             led_mode_array[led_mode.current()],
+                             tt_mode_var.get(),
+                             tt_inc_var.get(),
+                             debounce_time_var.get(),
+                             polling_rate_array[polling_rate.current()],
+                             True)
+                  ).grid(column = 3, row = 0, sticky = (E, W))
 
         button_frame.grid_columnconfigure(1, weight = 1)
 
