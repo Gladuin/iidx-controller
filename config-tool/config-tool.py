@@ -65,28 +65,28 @@ class GUI_CLASS(threading.Thread):
 
         ttk.Separator(mainframe, orient="horizontal").grid(column = 0, row = 1, columnspan = 2, sticky = (E, W))
         
-        controllermode_array = ["Joystick", "Keyboard"]
-        ledmode_array = ["Reactive + HID", "HID", "Reactive", "Off"]
+        controller_mode_array = ["Joystick", "Keyboard"]
+        led_mode_array = ["Reactive + HID", "HID", "Reactive", "Off"]
         
         ttk.Label(mainframe, text = "Controller mode").grid(column = 0, row = 2, sticky = W)
-        controllermode = ttk.Combobox(mainframe, values = controllermode_array)
-        controllermode.grid(column = 1, row = 2, sticky = W)
-        controllermode.state(["!disabled", "readonly"])
-        controllermode.current(0)
+        controller_mode = ttk.Combobox(mainframe, values = controller_mode_array)
+        controller_mode.grid(column = 1, row = 2, sticky = W)
+        controller_mode.state(["!disabled", "readonly"])
+        controller_mode.current(0)
 
         ttk.Label(mainframe, text = "LED mode").grid(column = 0, row = 3, sticky = W)
-        ledmode = ttk.Combobox(mainframe, values = ledmode_array)
-        ledmode.grid(column = 1, row = 3, sticky = W)
-        ledmode.state(["!disabled", "readonly"])
-        ledmode.current(0)
+        led_mode = ttk.Combobox(mainframe, values = led_mode_array)
+        led_mode.grid(column = 1, row = 3, sticky = W)
+        led_mode.state(["!disabled", "readonly"])
+        led_mode.current(0)
 
-        radiobuttonframe = ttk.Frame(mainframe)
-        radiobuttonframe.grid(column = 1, row = 4, sticky = (N, W, E, S))
+        radiobutton_frame = ttk.Frame(mainframe)
+        radiobutton_frame.grid(column = 1, row = 4, sticky = (N, W, E, S))
         tt_mode_var = IntVar()
 
         ttk.Label(mainframe, text = "TT mode").grid(column = 0, row = 4, sticky = W)
-        ttk.Radiobutton(radiobuttonframe, text = "Analog", variable = tt_mode_var, value = 0).grid(column = 0, row = 0, sticky = W, padx = (0, 5))
-        ttk.Radiobutton(radiobuttonframe, text = "Digital", variable = tt_mode_var, value = 1).grid(column = 1, row = 0, sticky = W)
+        ttk.Radiobutton(radiobutton_frame, text = "Analog", variable = tt_mode_var, value = 0).grid(column = 0, row = 0, sticky = W, padx = (0, 5))
+        ttk.Radiobutton(radiobutton_frame, text = "Digital", variable = tt_mode_var, value = 1).grid(column = 1, row = 0, sticky = W)
 
         ttk.Separator(mainframe, orient="horizontal").grid(column = 0, row = 5, columnspan = 2, sticky = (E, W))
         
@@ -106,21 +106,21 @@ class GUI_CLASS(threading.Thread):
         pollingrate_array = ["1000", "500", "250", "125"]
 
         ttk.Label(mainframe, text = "Polling rate (Hz)").grid(column = 0, row = 8, sticky = W)
-        pollingrate = ttk.Combobox(mainframe, values = pollingrate_array)
-        pollingrate.grid(column = 1, row = 8, sticky = W)
-        pollingrate.state(["!disabled", "readonly"])
-        pollingrate.current(0)
+        polling_rate = ttk.Combobox(mainframe, values = pollingrate_array)
+        polling_rate.grid(column = 1, row = 8, sticky = W)
+        polling_rate.state(["!disabled", "readonly"])
+        polling_rate.current(0)
 
         ttk.Separator(mainframe, orient="horizontal").grid(column = 0, row = 9, columnspan = 2, sticky = (E, W))
 
-        buttonframe = ttk.Frame(mainframe)
-        buttonframe.grid(column = 0, row = 10, columnspan = 2, sticky = (N, W, E, S))
+        button_frame = ttk.Frame(mainframe)
+        button_frame.grid(column = 0, row = 10, columnspan = 2, sticky = (N, W, E, S))
 
-        ttk.Button(buttonframe, text = "Reset controller", command = lambda:send(0xFF00)).grid(column = 0, row = 0, sticky = (E, W))
-        ttk.Button(buttonframe, text = "Save").grid(column = 2, row = 0, sticky = (E, W))
-        ttk.Button(buttonframe, text = "Apply").grid(column = 3, row = 0, sticky = (E, W))
+        ttk.Button(button_frame, text = "Reset controller", command = lambda:send(0xFF00)).grid(column = 0, row = 0, sticky = (E, W))
+        ttk.Button(button_frame, text = "Save").grid(column = 2, row = 0, sticky = (E, W))
+        ttk.Button(button_frame, text = "Apply").grid(column = 3, row = 0, sticky = (E, W))
 
-        buttonframe.grid_columnconfigure(1, weight = 1)
+        button_frame.grid_columnconfigure(1, weight = 1)
 
         for child in mainframe.winfo_children():
             child.grid_configure(padx=2, pady=2)
