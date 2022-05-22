@@ -1,3 +1,6 @@
+#ifndef __IIDXHID_h
+#define __IIDXHID_h
+
 #include "HID.h"
 
 #define ADJUSTED_PPR ((int)((float)ENCODER_PPR * ((float)255 / (float)INCREMENTS_PER_FULL_TURN)))
@@ -19,3 +22,5 @@ class IIDXHID_ : public PluggableUSBModule {
 };
 
 extern IIDXHID_ IIDXHID;
+
+#endif

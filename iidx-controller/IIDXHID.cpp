@@ -1,8 +1,8 @@
 #include "IIDXHID.h"
 #include "config.h"
 
-#define BUTTON_PADDING (8 - (sizeof(button_pins) % 8))
-#define LED_PADDING (8 - (sizeof(led_pins) % 8))
+#define BUTTON_PADDING (8 - (NUM_BUTTONS % 8))
+#define LED_PADDING (8 - (NUM_LEDS % 8))
 
 #define ENCODERMAX1 ADJUSTED_PPR & 0x00FF
 #define ENCODERMAX2 ADJUSTED_PPR >> 8
@@ -71,11 +71,11 @@ static const uint8_t PROGMEM hid_report[] = {
     /* Buttons */
     0x05, 0x09,                      //   USAGE_PAGE (Button)
     0x19, 0x01,                      //   USAGE_MINIMUM (Button 1)
-    0x29, sizeof(button_pins),       //   USAGE_MAXIMUM (Button sizeof(button_pins))
+    0x29, NUM_BUTTONS,               //   USAGE_MAXIMUM (Button sizeof(button_pins))
     0x15, 0x00,                      //   LOGICAL_MINIMUM (0)
     0x25, 0x01,                      //   LOGICAL_MAXIMUM (1)
     0x75, 0x01,                      //   REPORT_SIZE (1)
-    0x95, sizeof(button_pins),       //   REPORT_COUNT (sizeof(button_pins))
+    0x95, NUM_BUTTONS,               //   REPORT_COUNT (sizeof(button_pins))
     0x55, 0x00,                      //   UNIT_EXPONENT (0)
     0x65, 0x00,                      //   UNIT (None)
     0x81, 0x02,                      //   INPUT (Data,Var,Abs)
@@ -122,7 +122,7 @@ static const uint8_t PROGMEM hid_report[] = {
     0x15, 0x00,                      //   LOGICAL_MINIMUM (0)
     0x25, 0x01,                      //   LOGICAL_MAXIMUM (1)
     0x75, 0x01,                      //   REPORT_SIZE (1)
-    0x95, sizeof(led_pins),          //   REPORT_COUNT (sizeof(led_pins))
+    0x95, NUM_LEDS,                  //   REPORT_COUNT (sizeof(led_pins))
     0xa1, 0x02,                      //   COLLECTION (Logical)
     0x89, 0x04,                      //     STRING_MINIMUM (4)
     0x99, 0x0e,                      //     STRING_MAXIMUM (14)

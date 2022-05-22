@@ -6,7 +6,7 @@
 
 IIDXHID_ IIDXHID;
 
-Bounce buttons[sizeof(button_pins)];
+Bounce buttons[NUM_BUTTONS];
 
 int tt_delta;
 int32_t tt_pos;
@@ -16,7 +16,7 @@ uint8_t tt_lookup[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 const int encoder_cooldown_const = 100;
 int encoder_cooldown = 0;
 
-int button_state_array[sizeof(button_pins)];
+int button_state_array[NUM_BUTTONS];
 
 bool hid_reactive_autoswitch = true;
 bool hid_lights = true;
@@ -32,30 +32,33 @@ void initEncoder() {
     pinMode(encoder_pin0, INPUT_PULLUP);
     pinMode(encoder_pin1, INPUT_PULLUP);
 
-    byte eA = !IO_READ(encoder_pin0);
-    byte eB = !IO_READ(encoder_pin1);
-    g_encoderStVL = eB<<1 | eA;
+    computeEncoder();
 
     setupTimerInterrupt();
 }
 
 void computeEncoder() {
-    byte eA = !IO_READ(encoder_pin0);
-    byte eB = !IO_READ(encoder_pin1);
-
-    byte st = ((byte)eB<<1) | (byte)eA;
-
-    byte encoderSt = g_encoderStVL;
-
-    if (encoderSt != st) {
-        bool wentDown = (!encoderSt && (st == 2));
-        bool wentUp = (!encoderSt && (st == 1));
-
-        if (wentDown) g_encoderValueVL--;
-        if (wentUp) g_encoderValueVL++;
-
-        g_encoderStVL = st;
+    // Reference: https://github.com/PaulStoffregen/Encoder
+    uint8_t s = g_encoderStVL & 3;
+    if (IO_READ(encoder_pin0)) s |= 4;
+    if (IO_READ(encoder_pin1)) s |= 8;
+    switch (s) {
+        case 0: case 5: case 10: case 15:
+            break;
+        case 1: case 7: case 8: case 14:
+            g_encoderValueVL += 1;
+            break;
+        case 2: case 4: case 11: case 13:
+            g_encoderValueVL -= 1;
+            break;
+        case 3: case 12:
+            g_encoderValueVL += 2;
+            break;
+        default:
+            g_encoderValueVL -= 2;
+            break;
     }
+    g_encoderStVL = (s >> 2);
 }
 
 int encoder_delta() {
@@ -68,7 +71,7 @@ int encoder_delta() {
 
 void setup() {
     // Buttons setup
-    for (int i = 0; i < sizeof(button_pins); i++) {
+    for (int i = 0; i < NUM_BUTTONS; i++) {
         buttons[i] = Bounce();
         buttons[i].attach(button_pins[i], INPUT_PULLUP);
         buttons[i].interval(MS_DEBOUNCE);
@@ -78,14 +81,14 @@ void setup() {
     initEncoder();
 
     // LED startup animation and setup
-    for (int i = 0; i < sizeof(led_pins); i++) {
+    for (int i = 0; i < NUM_LEDS; i++) {
         pinMode(led_pins[i], OUTPUT);
         digitalWrite(led_pins[i], HIGH);
     }
 
     delay(200);
 
-    for (int i = 0; i < sizeof(led_pins); i++) {
+    for (int i = 0; i < NUM_LEDS; i++) {
         digitalWrite(led_pins[i], LOW);
     }
 }
@@ -105,13 +108,13 @@ void loop() {
     }
 
     // Write button status into array
-    for (int i = 0; i < sizeof(button_pins); i++) {
+    for (int i = 0; i < NUM_BUTTONS; i++) {
         buttons[i].update();
         button_state_array[i] = buttons[i].read();
     }
 
     // Read from array and convert to bitfield
-    for (int i = 0; i < sizeof(button_pins); i++) {
+    for (int i = 0; i < NUM_BUTTONS; i++) {
         int button_value = button_state_array[i];
 
         // Put button states into the buttons_state variable via bitwise operations
@@ -182,9 +185,6 @@ void setupTimerInterrupt() {
     OCR3AH = 0;
 
     // Set compare match register for particular frequency increments
-    //  OCR3AL = 133; // = (16000000) / 64 / 2000  -> 133   This is  clock_frequency / prescaler / desired_frequency  ( 2 KHz, 0.5ms)
-    //  OCR3AL = 50;  // = (16000000) / 64 / 5000  ->  50   This is  clock_frequency / prescaler / desired_frequency  ( 5 KHz, 0.2ms)
-    //  OCR3AL = 25;  // = (16000000) / 64 / 10000 ->  25   This is  clock_frequency / prescaler / desired_frequency  (10 kHz, 0.1ms)
     OCR3AL = INTERRUPT_PERIOD;
 
     // Enable timer compare interrupt

@@ -1,3 +1,6 @@
+#ifndef __CONFIG_h
+#define __CONFIG_h
+
 /* PINOUT */
 // Pins where the LEDs are connected to
 const uint8_t led_pins[] = {
@@ -61,11 +64,17 @@ const uint8_t encoder_pin1 = 1;  // white wire (b phase)
 #define READFAST 1
 
 // This is (cpu_clock_frequency / prescaler / desired_interrupt_frequency)
-// for example, set to 133 for 0.5ms (2kHz)  on a 16MHz processor: (16000000L / 64 / 2000  -> 133)
-// for example, set to 50  for 0.2ms (5kHz)  on a 16MHz processor: (16000000L / 64 / 5000  -> 50)
-// for example, set to 25  for 0.1ms (10kHz) on a 16MHz processor: (16000000L / 64 / 10000 -> 25)
+// set to 133 for 0.5ms (2kHz)  on a 16MHz processor: (16000000L / 64 / 2000  -> 133)
+// set to 50  for 0.2ms (5kHz)  on a 16MHz processor: (16000000L / 64 / 5000  -> 50)
+// set to 25  for 0.1ms (10kHz) on a 16MHz processor: (16000000L / 64 / 10000 -> 25)
+// set to 12  for 0.05ms (20kHz) on a 16MHz processor: (16000000L / 64 / 20833 -> 12)
+#if ENCODER_PPR < 360
 #define INTERRUPT_PERIOD 25
+#else // High PPR encoders have the possibility to switch faster than the timer
+#define INTERRUPT_PERIOD 12
+#endif
 
+/* DEFINES FOR ELSEWHERE IN THE CODE, DO NOT MODIFY LINES BELOW THIS POINT */
 #if READFAST == 1
     #include "digitalWriteFast.h"
     #define IO_WRITE(X, Y) digitalWriteFast(X, Y)
@@ -75,4 +84,9 @@ const uint8_t encoder_pin1 = 1;  // white wire (b phase)
     #define IO_WRITE(X, Y) digitalWrite(X, Y)
     #define IO_READ(X) digitalRead(X)
     #define IO_MODE(X, Y) pinMode(X, Y)
+#endif
+
+#define NUM_BUTTONS (sizeof(button_pins) / sizeof(uint8_t))
+#define NUM_LEDS (sizeof(led_pins) / sizeof(uint8_t))
+
 #endif
