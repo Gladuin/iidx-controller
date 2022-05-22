@@ -1,8 +1,9 @@
-import threading
 import time
+import threading
 
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 
 from pywinusb import hid
 
@@ -11,6 +12,10 @@ def get_filtered_devices():
     return filter.get_devices()
 
 def send(data):
+    if len(get_filtered_devices()) == 0:
+        messagebox.showwarning(title = "No controller", message = "Please connect a controller before\ntrying to send commands")
+        return None
+
     device = get_filtered_devices()[0]
     device.open()
 
@@ -21,6 +26,14 @@ def send(data):
 
     device.send_output_report(report_data)
     device.close()
+    
+def validate_input(entry_input):
+    if entry_input.isdigit() == False and int(entry_input) > 255:
+        return False
+    elif entry_input == "":
+        return True
+    else:
+        return True
 
 class GUI_CLASS(threading.Thread):
 
@@ -62,18 +75,21 @@ class GUI_CLASS(threading.Thread):
 
         radiobuttonframe = ttk.Frame(mainframe)
         radiobuttonframe.grid(column = 1, row = 4, sticky = (N, W, E, S))
+        tt_mode_var = IntVar()
 
         ttk.Label(mainframe, text = "TT mode").grid(column = 0, row = 4, sticky = W)
-        ttk.Radiobutton(radiobuttonframe, text = "Digital").grid(column = 0, row = 0, sticky = W, padx = (0, 5))
-        ttk.Radiobutton(radiobuttonframe, text = "Analog").grid(column = 1, row = 0, sticky = W)
+        ttk.Radiobutton(radiobuttonframe, text = "Analog", variable = tt_mode_var, value = 0).grid(column = 0, row = 0, sticky = W, padx = (0, 5))
+        ttk.Radiobutton(radiobuttonframe, text = "Digital", variable = tt_mode_var, value = 1).grid(column = 1, row = 0, sticky = W)
 
         ttk.Separator(mainframe, orient="horizontal").grid(column = 0, row = 5, columnspan = 2, sticky = (E, W))
-
+        
+        validate_command = (self.root.register(validate_input), "%P")
+        
         ttk.Label(mainframe, text = "TT increments per full turn").grid(column = 0, row = 6, sticky = W)
-        ttk.Entry(mainframe).grid(column = 1, row = 6, sticky = (E, W))
+        ttk.Entry(mainframe, validate = "key", validatecommand = validate_command).grid(column = 1, row = 6, sticky = (E, W))
 
         ttk.Label(mainframe, text = "Debounce time (ms)").grid(column = 0, row = 7, sticky = W)
-        ttk.Entry(mainframe).grid(column = 1, row = 7, sticky = (E, W))
+        ttk.Entry(mainframe, validate = "key", validatecommand = validate_command).grid(column = 1, row = 7, sticky = (E, W))
 
         ttk.Label(mainframe, text = "Polling rate (Hz)").grid(column = 0, row = 8, sticky = W)
         pollingrate = ttk.Combobox(mainframe, values = ["1000", "500", "250", "125"])
