@@ -5,13 +5,17 @@
 #include "src/IO/Buttons.h"
 #include "src/IO/Encoder.h"
 #include "src/IO/LEDs.h"
+#include "src/Configuration.h"
 
-#include "config.h"
+static configuration_struct *config;
 
 void setup() {
+    initialise_configuration();
     initialise_buttons();
     initialise_encoder();
     initialise_leds();
+
+    get_configuration(&config);
 
     // Start LUFA USB stuff
     delay(500);
@@ -20,8 +24,10 @@ void setup() {
 }
 
 void loop() {
-    if ((millis() - get_last_led_update()) > 3000) {
-        write_leds(get_button_state(), false);
+    if (config->led_mode == 0 || config->led_mode == 2) {
+        if ((millis() - get_last_led_update()) > 3000 || config->led_mode == 2) {
+            write_leds(get_button_state(), false);
+        }
     }
 
     HID_task();

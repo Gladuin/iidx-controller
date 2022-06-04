@@ -17,10 +17,13 @@
 #include "../IO/Buttons.h"
 #include "../IO/Encoder.h" 
 #include "../IO/LEDs.h"
+#include "../Configuration.h"
 #include "Descriptors.h"
 
 
 unsigned long last_led_update;
+
+static configuration_struct *config;
 
 typedef struct {
     uint8_t report_id;
@@ -39,6 +42,8 @@ unsigned long get_last_led_update() {
 }
 
 void setup_hardware(void) {
+    get_configuration(&config);
+    
 	// Disable watchdog if enabled by bootloader/fuses
 	MCUSR &= ~(1 << WDRF);
 	wdt_disable();
@@ -96,9 +101,14 @@ void process_hid_report(output_data_struct* output_struct) {
     switch (output_struct->report_id) {
         case 3:
             process_command(output_struct->data);
+            break;
         case 4:
-            last_led_update = millis();
-            write_leds(output_struct->data, true);
+            if (config->led_mode == 0 || config->led_mode == 1) {
+                last_led_update = millis();
+                write_leds(output_struct->data, true);
+            }
+            
+            break;
     }
 }
 

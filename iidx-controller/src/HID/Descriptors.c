@@ -3,7 +3,7 @@
 #include <avr/pgmspace.h>
 
 #include "LUFAConfig.h"
-#include "../../config.h"
+#include "../Configuration.h"
 
 #include <LUFA/LUFA/Drivers/USB/USB.h>
 
@@ -13,6 +13,10 @@
 // Macros
 #define BUTTON_PADDING (8 - (sizeof(button_pins) % 8))
 #define LED_PADDING (8 - (sizeof(led_pins) % 8))
+
+#if (defined(ARCH_HAS_MULTI_ADDRESS_SPACE) && !(defined(USE_FLASH_DESCRIPTORS) || defined(USE_EEPROM_DESCRIPTORS) || defined(USE_RAM_DESCRIPTORS)))
+    #define HAS_MULTIPLE_DESCRIPTOR_ADDRESS_SPACES
+#endif
 
 // Types
 typedef struct {
@@ -35,8 +39,10 @@ enum string_descriptors_enum {
 	STRING_ID_Product      = 2, // Product string ID
 };
 
+static configuration_struct *config;
 
-const USB_Descriptor_HIDReport_Datatype_t PROGMEM generic_report[] = {
+
+USB_Descriptor_HIDReport_Datatype_t generic_report[] = {
     HID_RI_USAGE_PAGE(8, 1),
     HID_RI_USAGE(8, 4),
     HID_RI_COLLECTION(8, 1),
@@ -64,7 +70,7 @@ const USB_Descriptor_HIDReport_Datatype_t PROGMEM generic_report[] = {
     HID_RI_USAGE_PAGE(8, 1),
     HID_RI_USAGE(8, 1),
     HID_RI_LOGICAL_MINIMUM(8, 8),
-    HID_RI_LOGICAL_MAXIMUM(16, ADJUSTED_PPR),
+    HID_RI_LOGICAL_MAXIMUM(16, 0),   // gets changed later down in the code
     HID_RI_REPORT_SIZE(8, 16),
     HID_RI_REPORT_COUNT(8, 1),
     HID_RI_COLLECTION(8, 0),
@@ -130,7 +136,7 @@ const USB_Descriptor_Device_t PROGMEM device_descriptor = {
 	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
 };
 
-const USB_descriptor_configuration_struct PROGMEM configuration_descriptor = {
+USB_descriptor_configuration_struct configuration_descriptor = {
 	.Config =
 		{
 			.Header                 = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
@@ -143,7 +149,7 @@ const USB_descriptor_configuration_struct PROGMEM configuration_descriptor = {
 
 			.ConfigAttributes       = (USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_SELFPOWERED),
 
-			.MaxPowerConsumption    = USB_CONFIG_POWER_MA(100)
+			.MaxPowerConsumption    = USB_CONFIG_POWER_MA(500)
 		},
 
 	.HID_Interface =
@@ -180,7 +186,7 @@ const USB_descriptor_configuration_struct PROGMEM configuration_descriptor = {
 			.EndpointAddress        = GENERIC_IN_EPADDR,
 			.Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
 			.EndpointSize           = GENERIC_EPSIZE,
-			.PollingIntervalMS      = 0x05
+			.PollingIntervalMS      = 0x01
 		},
 
 	.HID_ReportOUTEndpoint =
@@ -190,7 +196,7 @@ const USB_descriptor_configuration_struct PROGMEM configuration_descriptor = {
 			.EndpointAddress        = GENERIC_OUT_EPADDR,
 			.Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
 			.EndpointSize           = GENERIC_EPSIZE,
-			.PollingIntervalMS      = 0x05
+			.PollingIntervalMS      = 0x01
 		}
 };
 
@@ -200,13 +206,31 @@ const USB_Descriptor_String_t PROGMEM product_string = USB_STRING_DESCRIPTOR(L"I
 
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
-                                    const void** const descriptor_address)
+                                    const void** const descriptor_address
+                                    #if defined(HAS_MULTIPLE_DESCRIPTOR_ADDRESS_SPACES)
+                                    , uint8_t* const descriptor_memory_space
+                                    #endif
+                                    )
 {
+    get_configuration(&config);
+    
 	const uint8_t  descriptor_type   = (wValue >> 8);
 	const uint8_t  descriptor_number = (wValue & 0xFF);
 
 	const void* address = NULL;
 	uint16_t    size    = NO_DESCRIPTOR;
+
+    // adjust logical maximum of encoder
+    generic_report[41] = ADJUSTED_PPR & 0xFF;
+    generic_report[42] = ADJUSTED_PPR >> 8;
+    
+    configuration_descriptor.HID_ReportINEndpoint.PollingIntervalMS = config->polling_rate;
+    configuration_descriptor.HID_ReportOUTEndpoint.PollingIntervalMS = config->polling_rate;
+    
+    
+    #if defined(HAS_MULTIPLE_DESCRIPTOR_ADDRESS_SPACES)
+	*descriptor_memory_space = MEMSPACE_FLASH;
+	#endif
 
 	switch (descriptor_type)
 	{
@@ -215,6 +239,9 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 			size    = sizeof(USB_Descriptor_Device_t);
 			break;
 		case DTYPE_Configuration:
+            #if defined(HAS_MULTIPLE_DESCRIPTOR_ADDRESS_SPACES)
+			*descriptor_memory_space = MEMSPACE_RAM;
+			#endif
 			address = &configuration_descriptor;
 			size    = sizeof(USB_descriptor_configuration_struct);
 			break;
@@ -237,10 +264,17 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 
 			break;
 		case HID_DTYPE_HID:
+            #if defined(HAS_MULTIPLE_DESCRIPTOR_ADDRESS_SPACES)
+			*descriptor_memory_space = MEMSPACE_RAM;
+			#endif
 			address = &configuration_descriptor.HID_GenericHID;
 			size    = sizeof(USB_HID_Descriptor_HID_t);
 			break;
 		case HID_DTYPE_Report:
+            #if defined(HAS_MULTIPLE_DESCRIPTOR_ADDRESS_SPACES)
+			*descriptor_memory_space = MEMSPACE_RAM;
+			#endif
+        
 			address = &generic_report;
 			size    = sizeof(generic_report);
 			break;

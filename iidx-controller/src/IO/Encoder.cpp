@@ -3,12 +3,16 @@
 #include <Arduino.h>
 
 #include "../digitalWriteFast.h"
-#include "../../config.h"
+#include "../Configuration.h"
 
 #include "Encoder.h"
 
+
 volatile byte encoder_state_volatile;
 volatile int16_t encoder_value_volatile = 0;
+
+static configuration_struct *config;
+
 
 void setup_timer_interrupt() {
     TCCR3A = 0; // Set entire TCCR3A register to 0
@@ -18,11 +22,11 @@ void setup_timer_interrupt() {
     // Set compare match register (write to the high bit first)
     OCR3AH = 0;
 
-    // Set compare match register for particular frequency increments
+    // Set compare match register for particular frequency increments (cpu_clock_frequency / prescaler / desired_interrupt_frequency)
     //  OCR3AL = 133; // = (16000000) / 64 / 2000  -> 133   This is  clock_frequency / prescaler / desired_frequency  ( 2 KHz, 0.5ms)
     //  OCR3AL = 50;  // = (16000000) / 64 / 5000  ->  50   This is  clock_frequency / prescaler / desired_frequency  ( 5 KHz, 0.2ms)
     //  OCR3AL = 25;  // = (16000000) / 64 / 10000 ->  25   This is  clock_frequency / prescaler / desired_frequency  (10 kHz, 0.1ms)
-    OCR3AL = INTERRUPT_PERIOD;
+    OCR3AL = 25;
 
     // Enable timer compare interrupt
     TIMSK3 = (1 << OCIE3A);
@@ -38,6 +42,8 @@ void setup_timer_interrupt() {
 }
 
 void initialise_encoder() {
+    get_configuration(&config);
+    
     pinMode(encoder_pin0, INPUT_PULLUP);
     pinMode(encoder_pin1, INPUT_PULLUP);
 

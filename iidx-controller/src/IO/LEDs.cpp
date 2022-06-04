@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-#include "../../config.h"
+#include "../Configuration.h"
 
 #include "LEDs.h"
 

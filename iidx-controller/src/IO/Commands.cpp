@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <avr/wdt.h>
 
+#include "../Configuration.h"
+
 #include "Commands.h"
 
 void reboot() {
@@ -15,7 +17,18 @@ void reboot() {
 }
 
 void process_command(uint16_t data) {
-    if ((data & 0xFF) == 0xFF) {
-        reboot();
+    switch (data & 0xFF) {
+        case 0xFF:
+            reboot();
+            break;
+        case 0x01:
+        case 0x10:
+        case 0x20:
+        case 0x30:
+        case 0x40:
+        case 0x50:
+        case 0x60:
+            new_configuration(data);
+            break;
     }
 }
