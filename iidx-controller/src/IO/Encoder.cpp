@@ -8,8 +8,13 @@
 #include "Encoder.h"
 
 
+#define AMOUNT 300
+
+
 volatile byte encoder_state_volatile;
 volatile int16_t encoder_value_volatile = 0;
+
+int digital_rotation = 0;
 
 static configuration_struct *config;
 
@@ -54,8 +59,24 @@ void initialise_encoder() {
     setup_timer_interrupt();
 }
 
+uint8_t get_digital_encoder_state() {
+    // thank you CrazyRedMachine for the inspiration / half stolen code for this digital tt implementation
+    
+    if (digital_rotation > 0) {
+        // going up
+        digital_rotation--;
+        return 1;
+    } else if (digital_rotation < 0) {
+        // going down
+        digital_rotation++;
+        return 2;
+    } else {
+        // nothing
+        return 0;
+    }
+}
+
 uint16_t get_encoder_state() {
-   
     if (encoder_value_volatile >= ADJUSTED_PPR) {
         encoder_value_volatile = 0;
     } else if (encoder_value_volatile < 0) {
@@ -77,8 +98,15 @@ void compute_encoder() {
         bool went_down = (!encoder_state && (state == 2));
         bool went_up = (!encoder_state && (state == 1));
 
-        if (went_down) encoder_value_volatile--;
-        if (went_up) encoder_value_volatile++;
+        if (went_down) {
+            digital_rotation = AMOUNT;
+            encoder_value_volatile--;
+        }
+        
+        if (went_up) {
+            digital_rotation = -1 * AMOUNT;
+            encoder_value_volatile++;
+        }
 
         encoder_state_volatile = state;
     }

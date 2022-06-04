@@ -115,7 +115,22 @@ void process_hid_report(output_data_struct* output_struct) {
 void create_hid_report(input_data_struct* input_struct) {
     input_struct->report_id = 5;
     input_struct->button_status = get_button_state();
-    input_struct->turntable_position = get_encoder_state();
+
+    if (config->tt_mode == 0) {
+        input_struct->turntable_position = get_encoder_state();
+    } else if (config->tt_mode == 1) {
+        switch (get_digital_encoder_state()) {
+            case 0:
+                input_struct->button_status = input_struct->button_status & 0b1110011111111111;
+                break;
+            case 1:
+                input_struct->button_status = input_struct->button_status | 0b0000100000000000;
+                break;
+            case 2:
+                input_struct->button_status = input_struct->button_status | 0b0001000000000000;
+                break;
+        }
+    }
 }
 
 void HID_task(void) {

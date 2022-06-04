@@ -11,7 +11,7 @@
 
 
 // Macros
-#define BUTTON_PADDING (8 - (sizeof(button_pins) % 8))
+#define BUTTON_PADDING (8 - ((sizeof(button_pins) + 2) % 8))
 #define LED_PADDING (8 - (sizeof(led_pins) % 8))
 
 #if (defined(ARCH_HAS_MULTI_ADDRESS_SPACE) && !(defined(USE_FLASH_DESCRIPTORS) || defined(USE_EEPROM_DESCRIPTORS) || defined(USE_RAM_DESCRIPTORS)))
@@ -52,11 +52,11 @@ USB_Descriptor_HIDReport_Datatype_t generic_report[] = {
     // Buttons
     HID_RI_USAGE_PAGE(8, 9),
     HID_RI_USAGE_MINIMUM(8, 1),
-    HID_RI_USAGE_MAXIMUM(8, sizeof(button_pins)),
+    HID_RI_USAGE_MAXIMUM(8, (sizeof(button_pins) + 2)),
     HID_RI_LOGICAL_MINIMUM(8, 0),
     HID_RI_LOGICAL_MAXIMUM(8, 1),
     HID_RI_REPORT_SIZE(8, 1),
-    HID_RI_REPORT_COUNT(8, sizeof(button_pins)),
+    HID_RI_REPORT_COUNT(8, (sizeof(button_pins) + 2)),
     HID_RI_UNIT_EXPONENT(8, 0),
     HID_RI_UNIT(8, 0),
     HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
