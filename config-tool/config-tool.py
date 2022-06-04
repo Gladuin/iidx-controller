@@ -7,10 +7,6 @@ from tkinter import messagebox
 
 from pywinusb import hid
 
-def concat(a, b):
-    # thx https://stackoverflow.com/a/50700078
-    return int(f"{a}{b}")
-
 def get_filtered_devices():
     filter = hid.HidDeviceFilter(vendor_id = 0x0001, product_id = 0x0001)
     return filter.get_devices()
@@ -33,25 +29,20 @@ def send(data):
     return True
 
 def send_config(controller_mode, led_mode, tt_mode, tt_inc, debounce_time, polling_rate, temporary_config):
-    if send(concat(0x01, int(temporary_config))) == False:
+    concat_hex = lambda a, b: a << 8 | b
+
+    if send(concat_hex(0x01, int(temporary_config))) == False:
         return False
-    
-    send(concat(0x10, controller_mode))
-    
-    send(concat(0x20, led_mode))
-    
-    send(concat(0x30, int(tt_mode)))
-    
-    send(concat(0x40, int(tt_inc)))
-    
-    send(concat(0x50, int(debounce_time)))
-    
-    send(concat(0x60, round(((1 / int(polling_rate)) * 1000))))
-    
+
+    send(concat_hex(0x10, controller_mode))
+    send(concat_hex(0x20, led_mode))
+    send(concat_hex(0x30, int(tt_mode)))
+    send(concat_hex(0x40, int(tt_inc)))
+    send(concat_hex(0x50, int(debounce_time)))
+    send(concat_hex(0x60, round(((1 / int(polling_rate)) * 1000))))
     send(0x01FF) # config send end
     
     return True
-
     
 def validate_input(entry_input):
     if entry_input == "":
