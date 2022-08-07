@@ -56,11 +56,11 @@ void setup_hardware(void) {
 }
 
 void EVENT_USB_Device_ConfigurationChanged(void) {
-	bool ConfigSuccess = true;
-
 	// Setup HID Report Endpoints
-	ConfigSuccess &= Endpoint_ConfigureEndpoint(GENERIC_IN_EPADDR, EP_TYPE_INTERRUPT, GENERIC_EPSIZE, 1);
-	ConfigSuccess &= Endpoint_ConfigureEndpoint(GENERIC_OUT_EPADDR, EP_TYPE_INTERRUPT, GENERIC_EPSIZE, 1);
+	Endpoint_ConfigureEndpoint(GENERIC_OUT_EPADDR, EP_TYPE_INTERRUPT, HID_EPSIZE, 1);
+	Endpoint_ConfigureEndpoint(JOYSTICK_IN_EPADDR, EP_TYPE_INTERRUPT, HID_EPSIZE, 1);
+	Endpoint_ConfigureEndpoint(KEYBOARD_IN_EPADDR, EP_TYPE_INTERRUPT, HID_EPSIZE, 1);
+	Endpoint_ConfigureEndpoint(MOUSE_IN_EPADDR, EP_TYPE_INTERRUPT, HID_EPSIZE, 1);
 }
 
 void EVENT_USB_Device_ControlRequest(void) {
@@ -99,10 +99,10 @@ void EVENT_USB_Device_ControlRequest(void) {
 
 void process_hid_report(output_data_struct* output_struct) {
     switch (output_struct->report_id) {
-        case 3:
+        case 2:
             process_command(output_struct->data);
             break;
-        case 4:
+        case 3:
             if (config->led_mode == 0 || config->led_mode == 1) {
                 last_led_update = millis();
                 write_leds(output_struct->data, true);
@@ -113,7 +113,7 @@ void process_hid_report(output_data_struct* output_struct) {
 }
 
 void create_hid_report(input_data_struct* input_struct) {
-    input_struct->report_id = 5;
+    input_struct->report_id = 1;
     input_struct->button_status = get_button_state();
 
     if (config->tt_mode == 0) {
@@ -158,7 +158,7 @@ void HID_task(void) {
 		Endpoint_ClearOUT();
 	}
 
-	Endpoint_SelectEndpoint(GENERIC_IN_EPADDR);
+	/* Endpoint_SelectEndpoint(GENERIC_IN_EPADDR);
 
 	// Check to see if the host is ready to accept another packet
 	if (Endpoint_IsINReady())  {
@@ -173,5 +173,5 @@ void HID_task(void) {
 
 		// Finalize the stream transfer to send the last packet
 		Endpoint_ClearIN();
-	}
+	} */
 }
