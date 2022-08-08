@@ -14,4 +14,11 @@
     // Size in bytes of the Generic HID reporting endpoint
     #define HID_EPSIZE                8
 
+    enum interface_descriptors_enum {
+        INTERFACE_ID_GenericHID = 0,
+        INTERFACE_ID_Joystick   = 1,
+        INTERFACE_ID_Keyboard   = 2,
+        INTERFACE_ID_Mouse      = 3
+    };
+
 #endif

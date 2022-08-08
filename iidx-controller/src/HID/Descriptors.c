@@ -46,13 +46,6 @@ typedef struct {
 } USB_descriptor_configuration_struct;
 
 
-enum interface_descriptors_enum {
-	INTERFACE_ID_GenericHID = 0,
-    INTERFACE_ID_Joystick   = 1,
-    INTERFACE_ID_Keyboard   = 2,
-    INTERFACE_ID_Mouse      = 3
-};
-
 enum string_descriptors_enum {
 	STRING_ID_Language     = 0, // Supported Languages string descriptor ID (must be zero)
 	STRING_ID_Manufacturer = 1, // Manufacturer string ID
@@ -109,8 +102,6 @@ USB_Descriptor_HIDReport_Datatype_t joystick_report[] = {
     HID_RI_USAGE(8, 4),
     HID_RI_COLLECTION(8, 1),
     
-    HID_RI_REPORT_ID(8, 1),
-    
     // Buttons
     HID_RI_USAGE_PAGE(8, 9),
     HID_RI_USAGE_MINIMUM(8, 1),
@@ -132,7 +123,7 @@ USB_Descriptor_HIDReport_Datatype_t joystick_report[] = {
     HID_RI_USAGE_PAGE(8, 1),
     HID_RI_USAGE(8, 1),
     HID_RI_LOGICAL_MINIMUM(8, 8),
-    HID_RI_LOGICAL_MAXIMUM(16, 0),   // gets changed later down in the code
+    HID_RI_LOGICAL_MAXIMUM(16, 600),   // gets changed later down in the code
     HID_RI_REPORT_SIZE(8, 16),
     HID_RI_REPORT_COUNT(8, 1),
     HID_RI_COLLECTION(8, 0),
@@ -163,7 +154,7 @@ const USB_Descriptor_HIDReport_Datatype_t PROGMEM keyboard_report[] = {
         HID_RI_USAGE_PAGE(8, 0x07), /* Keyboard */
         HID_RI_USAGE_MINIMUM(8, 0x00), /* Reserved (no event indicated) */
         HID_RI_USAGE_MAXIMUM(8, 0x65), /* Keyboard Application */
-        HID_RI_REPORT_COUNT(8, 0x06),
+        HID_RI_REPORT_COUNT(8, sizeof(button_pins) + 2),   // amount of keys
         HID_RI_REPORT_SIZE(8, 0x08),
         HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_ARRAY | HID_IOF_ABSOLUTE),
     HID_RI_END_COLLECTION(0),
