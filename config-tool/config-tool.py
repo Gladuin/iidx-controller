@@ -20,7 +20,7 @@ def send(data):
     device.open()
 
     report_data = bytearray(3)
-    report_data[0] = 0x03
+    report_data[0] = 0x02
     report_data[1] = (data >> 8)
     report_data[2] = (data & 0xFF)
 
