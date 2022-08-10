@@ -30,9 +30,15 @@ unsigned long last_led_update;
 static configuration_struct *config;
 
 typedef struct {
+    uint8_t report_id;
     uint16_t button_status;
     uint16_t turntable_position;
 } input_data_struct_joystick;
+
+typedef struct {
+    uint8_t report_id;
+    uint16_t data;
+} output_data_struct_joystick;
 
 typedef struct {
     uint8_t modifier;
@@ -44,11 +50,6 @@ typedef struct {
     int8_t x;
     int8_t y;
 } input_data_struct_mouse;
-
-typedef struct {
-    uint8_t report_id;
-    uint16_t data;
-} output_data_struct_generichid;
 
 
 unsigned long get_last_led_update() {
@@ -75,8 +76,8 @@ void EVENT_USB_Device_Connect(void) {
 
 void EVENT_USB_Device_ConfigurationChanged(void) {
 	// Setup HID Report Endpoints
-	Endpoint_ConfigureEndpoint(GENERIC_OUT_EPADDR, EP_TYPE_INTERRUPT, HID_EPSIZE, 1);
 	Endpoint_ConfigureEndpoint(JOYSTICK_IN_EPADDR, EP_TYPE_INTERRUPT, HID_EPSIZE, 1);
+	Endpoint_ConfigureEndpoint(JOYSTICK_OUT_EPADDR, EP_TYPE_INTERRUPT, HID_EPSIZE, 1);
 	Endpoint_ConfigureEndpoint(KEYBOARD_IN_EPADDR, EP_TYPE_INTERRUPT, HID_EPSIZE, 1);
 	Endpoint_ConfigureEndpoint(MOUSE_IN_EPADDR, EP_TYPE_INTERRUPT, HID_EPSIZE, 1);
     
@@ -117,15 +118,15 @@ void EVENT_USB_Device_ControlRequest(void) {
 
 		case HID_REQ_SetReport:
 			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
-				output_data_struct_generichid output_struct;
+				output_data_struct_joystick output_struct;
 
 				Endpoint_ClearSETUP();
 
 				// Read the report data from the control endpoint
-				Endpoint_Read_Control_Stream_LE(&output_struct, sizeof(output_data_struct_generichid));
+				Endpoint_Read_Control_Stream_LE(&output_struct, sizeof(output_data_struct_joystick));
 				Endpoint_ClearIN();
 
-				process_generic_report(&output_struct);
+				process_joystick_report(&output_struct);
 			}
 
 			break;
@@ -181,15 +182,15 @@ void EVENT_USB_Device_StartOfFrame(void) {
 	  idle_ms_remaining--;
 }
 
-void process_generic_report(output_data_struct_generichid* output_struct) {
+void process_joystick_report(output_data_struct_joystick* output_struct) {
     switch (output_struct->report_id) {
-        case 1:
+        case 2:
             if (config->led_mode == 0 || config->led_mode == 1) {
                 last_led_update = millis();
                 write_leds(output_struct->data, true);
             }
             break;
-        case 2:
+        case 3:
             process_command(output_struct->data);
             break;
     }
@@ -197,6 +198,8 @@ void process_generic_report(output_data_struct_generichid* output_struct) {
 
 void create_joystick_report(input_data_struct_joystick* input_data) {
     memset(input_data, 0, sizeof(input_data_struct_joystick));
+    
+    input_data->report_id = 1;
     
     if (config->controller_mode == 0) {
         input_data->button_status = get_button_state();
@@ -328,20 +331,20 @@ void HID_task(void) {
 	}
     
     
-	Endpoint_SelectEndpoint(GENERIC_OUT_EPADDR);
+	Endpoint_SelectEndpoint(JOYSTICK_OUT_EPADDR);
 
 	// Check to see if a packet has been sent from the host
 	if (Endpoint_IsOUTReceived()) {
 		// Check to see if the packet contains data
 		if (Endpoint_IsReadWriteAllowed()) {
 			// Create a temporary buffer to hold the read in report from the host
-			output_data_struct_generichid output_struct;
+			output_data_struct_joystick output_struct;
 
 			// Read Generic Report Data
-			Endpoint_Read_Stream_LE(&output_struct, sizeof(output_data_struct_generichid), NULL);
+			Endpoint_Read_Stream_LE(&output_struct, sizeof(output_data_struct_joystick), NULL);
 
 			// Process Generic Report Data
-			process_generic_report(&output_struct);
+			process_joystick_report(&output_struct);
 		}
 
 		// Finalize the stream transfer to send the last packet
