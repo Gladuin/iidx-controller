@@ -272,7 +272,7 @@ void HID_task(void) {
     static input_data_struct_keyboard  previous_keyboard_data;
     input_data_struct_keyboard                keyboard_data;
     
-    //static input_data_struct_mouse     previous_mouse_data;
+    static input_data_struct_mouse     previous_mouse_data;
     input_data_struct_mouse                   mouse_data;
     
     bool send_joy_report = false;
@@ -292,7 +292,7 @@ void HID_task(void) {
     } else {
         send_joy_report = (memcmp(&previous_joystick_data, &joystick_data, sizeof(input_data_struct_joystick)) != 0);
         send_kb_report  = (memcmp(&previous_keyboard_data, &keyboard_data, sizeof(input_data_struct_keyboard)) != 0);
-        //send_m_report   = (memcmp(&previous_mouse_data, &mouse_data, sizeof(input_data_struct_mouse)) != 0);
+        send_m_report   = (memcmp(&previous_mouse_data, &mouse_data, sizeof(input_data_struct_mouse)) != 0);
     }
     
     if (mouse_data.y != 0) {
@@ -323,7 +323,7 @@ void HID_task(void) {
 	Endpoint_SelectEndpoint(MOUSE_IN_EPADDR);
 
 	if (Endpoint_IsReadWriteAllowed() && send_m_report) {
-		//previous_mouse_data = mouse_data;
+		previous_mouse_data = mouse_data;
 
 		Endpoint_Write_Stream_LE(&mouse_data, sizeof(input_data_struct_mouse), NULL);
 
