@@ -208,9 +208,6 @@ void create_joystick_report(input_data_struct_joystick* input_data) {
             input_data->turntable_position = get_encoder_state();
         } else if (config->tt_mode == 1) {
             switch (get_digital_encoder_state()) {
-                case 0:
-                    input_data->button_status = input_data->button_status & 0b1110011111111111;
-                    break;
                 case 1:
                     input_data->button_status = input_data->button_status | 0b0000100000000000;
                     break;
@@ -234,10 +231,6 @@ void create_keyboard_report(input_data_struct_keyboard* input_data) {
         
         if (config->tt_mode == 1) {
             switch (get_digital_encoder_state()) {
-                case 0:
-                    input_data->keycode[sizeof(button_pins)] = 0x00;
-                    input_data->keycode[sizeof(button_pins) + 1] = 0x00;
-                    break;
                 case 1:
                     input_data->keycode[sizeof(button_pins)] = (0x03 + sizeof(button_pins)) + 1;
                     break;
@@ -255,7 +248,6 @@ void create_mouse_report(input_data_struct_mouse* input_data) {
     if (config->controller_mode == 1 && config->tt_mode == 0) {
         uint8_t mouse_dir = get_digital_encoder_state();
     
-        if (mouse_dir == 0) input_data->y = 0;
         if (mouse_dir == 1) input_data->y = 1;
         if (mouse_dir == 2) input_data->y = -1;
     }

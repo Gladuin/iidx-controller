@@ -70,9 +70,6 @@ uint8_t get_digital_encoder_state() {
         // going down
         digital_rotation++;
         return 2;
-    } else {
-        // nothing
-        return 0;
     }
 }
 
