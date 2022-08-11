@@ -78,7 +78,7 @@ USB_Descriptor_HIDReport_Datatype_t joystick_report[] = {
     // Encoder
     HID_RI_USAGE_PAGE(8, 1),
     HID_RI_USAGE(8, 1),
-    HID_RI_LOGICAL_MINIMUM(8, 8),
+    HID_RI_LOGICAL_MINIMUM(8, 0),
     HID_RI_LOGICAL_MAXIMUM(16, 0),   // gets changed later down in the code
     HID_RI_REPORT_SIZE(8, 16),
     HID_RI_REPORT_COUNT(8, 1),
