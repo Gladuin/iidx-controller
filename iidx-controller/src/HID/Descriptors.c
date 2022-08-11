@@ -344,11 +344,13 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 	uint16_t    size    = NO_DESCRIPTOR;
 
     // adjust logical maximum of encoder
-    //generic_report[41] = ADJUSTED_PPR & 0xFF;
-    //generic_report[42] = ADJUSTED_PPR >> 8;
-    //
-    //configuration_descriptor.HID_ReportINEndpoint.PollingIntervalMS = config->polling_rate;
-    //configuration_descriptor.HID_ReportOUTEndpoint.PollingIntervalMS = config->polling_rate;
+    joystick_report[41] = ADJUSTED_PPR & 0xFF;
+    joystick_report[42] = ADJUSTED_PPR >> 8;
+    
+    configuration_descriptor.HID1_joystick_in_endpoint.PollingIntervalMS    = config->polling_rate;
+    configuration_descriptor.HID1_joystick_out_endpoint.PollingIntervalMS   = config->polling_rate;
+    configuration_descriptor.HID2_keyboard_in_endpoint.PollingIntervalMS    = config->polling_rate;
+    configuration_descriptor.HID3_mouse_in_endpoint.PollingIntervalMS       = config->polling_rate;
     
     
     #if defined(HAS_MULTIPLE_DESCRIPTOR_ADDRESS_SPACES)
