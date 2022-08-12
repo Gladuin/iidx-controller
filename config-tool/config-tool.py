@@ -69,6 +69,7 @@ class GUI_CLASS(threading.Thread):
         global status_label
 
         self.root = Tk()
+        self.root.resizable(width = False, height = False)
         self.root.protocol("WM_DELETE_WINDOW", self.callback)
         self.root.title("config-tool")
 
