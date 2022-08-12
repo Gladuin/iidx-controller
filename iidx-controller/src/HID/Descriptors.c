@@ -159,8 +159,8 @@ USB_Descriptor_HIDReport_Datatype_t mouse_report[] = {
             HID_RI_USAGE_PAGE(8, 0x01), /* Generic Desktop */
             HID_RI_USAGE(8, 0x30), /* Usage X */
             HID_RI_USAGE(8, 0x31), /* Usage Y */
-            HID_RI_LOGICAL_MINIMUM(8, 0),   // gets changed later
-            HID_RI_LOGICAL_MAXIMUM(8, 0),   // gets changed later
+            HID_RI_LOGICAL_MINIMUM(16, 0),   // gets changed later
+            HID_RI_LOGICAL_MAXIMUM(16, 0),   // gets changed later
             HID_RI_REPORT_COUNT(8, 0x02),
             HID_RI_REPORT_SIZE(8, 16),
             HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_RELATIVE),
@@ -346,8 +346,10 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
     joystick_report[42] = ADJUSTED_PPR >> 8;
     
     // adjust min max of mouse report
-    mouse_report[18] = -(ENCODER_PPR / 2);
-    mouse_report[20] = ENCODER_PPR / 2;
+    mouse_report[17] = (-ENCODER_PPR / 2) & 0xFF;
+    mouse_report[18] = (-ENCODER_PPR / 2) >> 8;
+    mouse_report[20] = (ENCODER_PPR / 2) & 0xFF;
+    mouse_report[21] = (ENCODER_PPR / 2) >> 8;
     
     configuration_descriptor.HID1_joystick_in_endpoint.PollingIntervalMS    = config->polling_rate;
     configuration_descriptor.HID1_joystick_out_endpoint.PollingIntervalMS   = config->polling_rate;
@@ -423,6 +425,9 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                     size    = sizeof(keyboard_report);
                     break;
                 case INTERFACE_ID_Mouse:
+                    #if defined(HAS_MULTIPLE_DESCRIPTOR_ADDRESS_SPACES)
+                    *descriptor_memory_space = MEMSPACE_RAM;
+                    #endif
                     address = &mouse_report;
                     size    = sizeof(mouse_report);
                     break;
