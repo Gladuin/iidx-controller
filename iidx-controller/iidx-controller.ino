@@ -17,7 +17,6 @@ void setup() {
 
     get_configuration(&config);
 
-    // Start LUFA USB stuff
     delay(500);
     setup_hardware();
     GlobalInterruptEnable();
