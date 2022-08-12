@@ -48,7 +48,7 @@ void setup_timer_interrupt() {
 
 void initialise_encoder() {
     get_configuration(&config);
-    
+
     pinMode(encoder_pin0, INPUT_PULLUP);
     pinMode(encoder_pin1, INPUT_PULLUP);
 
@@ -61,7 +61,7 @@ void initialise_encoder() {
 
 uint8_t get_digital_encoder_state() {
     // thank you CrazyRedMachine for the inspiration / half stolen code for this digital tt implementation
-    
+
     if (digital_rotation > 0) {
         // going up
         digital_rotation--;
@@ -99,7 +99,7 @@ void compute_encoder() {
             digital_rotation = AMOUNT;
             encoder_value_volatile--;
         }
-        
+
         if (went_up) {
             digital_rotation = -1 * AMOUNT;
             encoder_value_volatile++;
