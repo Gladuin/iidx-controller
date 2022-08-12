@@ -1,6 +1,6 @@
 #ifndef _CONFIG_H_
     #define _CONFIG_H_
-    
+
     /* PINOUT */
     // Pins where the LEDs are connected to
     static const uint8_t led_pins[] = {
@@ -16,7 +16,7 @@
         14,   // misc button 3 led
         16    // misc button 4 led
     };
-    
+
     // Pins where the buttons are connected to
     static const uint8_t button_pins[] = {
         3,    // button 1
@@ -31,15 +31,15 @@
         15,   // misc button 3
         17    // misc button 4
     };
-    
+
     // Pins where the encoder is connected to
     static const uint8_t encoder_pin0 = 0;  // green wire (a phase)
     static const uint8_t encoder_pin1 = 1;  // white wire (b phase)
-    
+
     /* OPTIONS */
     // Your encoder pulses per rotation
     #define ENCODER_PPR 600
-    
+
     // The manufacturer name of this controller (leave the L in front of the ")
     #define MF_NAME L"username"
 #endif
