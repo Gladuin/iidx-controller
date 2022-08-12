@@ -6,12 +6,12 @@
     #else
         #define EXTERNC
     #endif
-    
+
     // Function prototypes
     EXTERNC void initialise_buttons();
     EXTERNC uint16_t get_button_state();
     EXTERNC void set_debounce_interval();
-    
+
     #undef EXTERNC
 
 #endif

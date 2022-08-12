@@ -21,12 +21,12 @@ void set_debounce_interval() {
 
 void initialise_buttons() {
     get_configuration(&config);
-    
+
     for (int i = 0; i < sizeof(button_pins); i++) {
         buttons[i] = Bounce();
         buttons[i].attach(button_pins[i], INPUT_PULLUP);
     }
-    
+
     set_debounce_interval();
 }
 
