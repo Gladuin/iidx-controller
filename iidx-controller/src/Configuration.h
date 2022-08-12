@@ -18,7 +18,7 @@
     #define ADJUSTED_PPR ((int)((float)ENCODER_PPR * ((float)255 / (float)config->increments_per_full_turn)))
 
     #ifdef __cplusplus
-    #define EXTERNC extern "C"
+        #define EXTERNC extern "C"
     #else
         #define EXTERNC
     #endif

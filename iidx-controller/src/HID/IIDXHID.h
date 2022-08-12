@@ -1,15 +1,15 @@
 #ifndef _IIDXHID_H_
 #define _IIDXHID_H_
 
+    #ifdef __cplusplus
+        #define EXTERNC extern "C"
+    #else
+        #define EXTERNC
+    #endif
+
     // Function prototypes
-    #ifdef __cplusplus
-    extern "C" {
-    #endif
-        unsigned long get_last_led_update();
-        void setup_hardware(void);
-        void HID_task(void);
-    #ifdef __cplusplus
-    }
-    #endif
+    EXTERNC unsigned long get_last_led_update();
+    EXTERNC void setup_hardware(void);
+    EXTERNC void HID_task(void);
 
 #endif
