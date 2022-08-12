@@ -6,10 +6,10 @@
     #else
         #define EXTERNC
     #endif
-    
+
     // Function prototypes
     EXTERNC void process_command(uint16_t);
-    
+
     #undef EXTERNC
 
 #endif
