@@ -7,7 +7,9 @@
 #include "src/IO/LEDs.h"
 #include "src/Configuration.h"
 
+
 static configuration_struct *config;
+
 
 void setup() {
     initialise_configuration();
