@@ -36,7 +36,7 @@ def send_config(controller_mode, led_mode, tt_mode, tt_inc, debounce_time, polli
 
     send(concat_hex(0x10, controller_mode))
     send(concat_hex(0x20, led_mode))
-    send(concat_hex(0x30, int(tt_mode)))
+    send(concat_hex(0x30, tt_mode))
     send(concat_hex(0x40, int(tt_inc)))
     send(concat_hex(0x50, int(debounce_time)))
     send(concat_hex(0x60, round(((1 / int(polling_rate)) * 1000))))
@@ -94,13 +94,11 @@ class GUI_CLASS(threading.Thread):
         led_mode.state(["!disabled", "readonly"])
         led_mode.current(0)
 
-        radiobutton_frame = ttk.Frame(mainframe)
-        radiobutton_frame.grid(column = 1, row = 4, sticky = (N, W, E, S))
-        tt_mode_var = IntVar()
-
         ttk.Label(mainframe, text = "TT mode").grid(column = 0, row = 4, sticky = W)
-        ttk.Radiobutton(radiobutton_frame, text = "Analog", variable = tt_mode_var, value = 0).grid(column = 0, row = 0, sticky = W, padx = (0, 5))
-        ttk.Radiobutton(radiobutton_frame, text = "Digital", variable = tt_mode_var, value = 1).grid(column = 1, row = 0, sticky = W)
+        tt_mode = ttk.Combobox(mainframe, values = ["Analog (joystick)", "Analog (mouse)", "Digital (joystick)", "Digital (button)", "Digital (keyboard)"])
+        tt_mode.grid(column = 1, row = 4, sticky = W)
+        tt_mode.state(["!disabled", "readonly"])
+        tt_mode.current(0)
 
         ttk.Separator(mainframe, orient="horizontal").grid(column = 0, row = 5, columnspan = 2, sticky = (E, W))
 
@@ -134,7 +132,7 @@ class GUI_CLASS(threading.Thread):
         ttk.Button(button_frame, text = "Save",
                    command = lambda:send_config(controller_mode.current(),
                                                 led_mode.current(),
-                                                tt_mode_var.get(),
+                                                tt_mode.current(),
                                                 tt_inc_var.get(),
                                                 debounce_time_var.get(),
                                                 polling_rate_array[polling_rate.current()],
@@ -144,7 +142,7 @@ class GUI_CLASS(threading.Thread):
         ttk.Button(button_frame, text = "Apply",
                    command = lambda:send_config(controller_mode.current(),
                              led_mode.current(),
-                             tt_mode_var.get(),
+                             tt_mode.current(),
                              tt_inc_var.get(),
                              debounce_time_var.get(),
                              polling_rate_array[polling_rate.current()],

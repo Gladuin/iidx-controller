@@ -204,18 +204,22 @@ void create_joystick_report(input_data_struct_joystick* input_data) {
     
     if (config->controller_mode == 0) {
         input_data->button_status = get_button_state();
-
-        if (config->tt_mode == 0) {
-            input_data->turntable_position = get_encoder_state();
-        } else if (config->tt_mode == 1) {
-            switch (get_digital_encoder_state()) {
-                case 1:
-                    input_data->button_status = input_data->button_status | 0b0000100000000000;
-                    break;
-                case 2:
-                    input_data->button_status = input_data->button_status | 0b0001000000000000;
-                    break;
-            }
+    }
+    
+    if (config->tt_mode == 0) {
+        input_data->turntable_position = get_encoder_state();
+    } else if ((config->tt_mode == 2) || (config->tt_mode == 3)) {
+        switch (get_digital_encoder_state()) {
+            case 1:
+                if (config->tt_mode == 2) input_data->turntable_position = ADJUSTED_PPR;
+                if (config->tt_mode == 3) input_data->button_status = input_data->button_status | 0b0000100000000000;
+                break;
+            case 2:
+                if (config->tt_mode == 2) input_data->turntable_position = 0;
+                if (config->tt_mode == 3) input_data->button_status = input_data->button_status | 0b0001000000000000;
+                break;
+            default:
+                if (config->tt_mode == 2) input_data->turntable_position = ADJUSTED_PPR / 2;
         }
     }
 }
@@ -229,16 +233,16 @@ void create_keyboard_report(input_data_struct_keyboard* input_data) {
         for (int i = 0; i < sizeof(button_pins); i++) {
             if (button_status & ((uint16_t)1 << i)) input_data->keycode[i] = 0x04 + i;
         }
-        
-        if (config->tt_mode == 1) {
-            switch (get_digital_encoder_state()) {
-                case 1:
-                    input_data->keycode[sizeof(button_pins)] = (0x03 + sizeof(button_pins)) + 1;
-                    break;
-                case 2:
-                    input_data->keycode[sizeof(button_pins) + 1] = (0x03 + sizeof(button_pins)) + 2;
-                    break;
-            }
+    }
+    
+    if (config->tt_mode == 4) {
+        switch (get_digital_encoder_state()) {
+            case 1:
+                input_data->keycode[sizeof(button_pins)] = (0x03 + sizeof(button_pins)) + 1;
+                break;
+            case 2:
+                input_data->keycode[sizeof(button_pins) + 1] = (0x03 + sizeof(button_pins)) + 2;
+                break;
         }
     }
 }
@@ -246,7 +250,7 @@ void create_keyboard_report(input_data_struct_keyboard* input_data) {
 void create_mouse_report(input_data_struct_mouse* input_data) {
     memset(input_data, 0, sizeof(input_data_struct_mouse));
     
-    if (config->controller_mode == 1 && config->tt_mode == 0) {  
+    if (config->tt_mode == 1) {  
         uint16_t turntable_position = get_encoder_state();
         
         input_data->y = turntable_position - previous_turntable_position;
