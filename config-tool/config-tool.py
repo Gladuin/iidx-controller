@@ -41,9 +41,9 @@ def send_config(controller_mode, led_mode, tt_mode, tt_inc, debounce_time, polli
     send(concat_hex(0x50, int(debounce_time)))
     send(concat_hex(0x60, round(((1 / int(polling_rate)) * 1000))))
     send(0x01FF) # config send end
-    
+
     return True
-    
+
 def validate_input(entry_input):
     if entry_input == "":
         return True
