@@ -1,9 +1,9 @@
 #ifndef _CONFIGURATION_H_
 #define _CONFIGURATION_H_
-    
+
     // Includes
     #include "../config.h"
-    
+
     // Structs
     typedef struct {
         uint8_t controller_mode;            // 0 = joystick, 1 = keyboard
@@ -13,7 +13,7 @@
         uint8_t debounce_time;              // 1 - 255, in ms
         uint8_t polling_rate;               // 1 - 255, in ms
     } configuration_struct;
-    
+
     // Macros
     #define ADJUSTED_PPR ((int)((float)ENCODER_PPR * ((float)255 / (float)config->increments_per_full_turn)))
 
@@ -22,12 +22,12 @@
     #else
         #define EXTERNC
     #endif
-    
+
     // Function prototypes
     EXTERNC void initialise_configuration();
     EXTERNC void get_configuration(configuration_struct**);
     EXTERNC void new_configuration(uint16_t);
-    
+
     #undef EXTERNC
 
 #endif
