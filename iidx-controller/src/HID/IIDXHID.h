@@ -1,6 +1,6 @@
 #ifndef _IIDXHID_H_
 #define _IIDXHID_H_
-    
+
     // Function prototypes
     #ifdef __cplusplus
     extern "C" {
@@ -11,5 +11,5 @@
     #ifdef __cplusplus
     }
     #endif
-    
+
 #endif
