@@ -26,6 +26,7 @@ static uint16_t idle_count = 500;
 static uint16_t idle_ms_remaining = 0;
 
 unsigned long last_led_update;
+uint16_t previous_turntable_position;
 
 static configuration_struct *config;
 
@@ -47,8 +48,8 @@ typedef struct {
 } input_data_struct_keyboard;
 
 typedef struct {
-    int8_t x;
-    int8_t y;
+    int16_t x;
+    int16_t y;
 } input_data_struct_mouse;
 
 
@@ -245,11 +246,12 @@ void create_keyboard_report(input_data_struct_keyboard* input_data) {
 void create_mouse_report(input_data_struct_mouse* input_data) {
     memset(input_data, 0, sizeof(input_data_struct_mouse));
     
-    if (config->controller_mode == 1 && config->tt_mode == 0) {
-        uint8_t mouse_dir = get_digital_encoder_state();
-    
-        if (mouse_dir == 1) input_data->y = 1;
-        if (mouse_dir == 2) input_data->y = -1;
+    if (config->controller_mode == 1 && config->tt_mode == 0) {  
+        uint16_t turntable_position = get_encoder_state();
+        
+        input_data->y = turntable_position - previous_turntable_position;
+        
+        previous_turntable_position = turntable_position;
     }
 }
 
