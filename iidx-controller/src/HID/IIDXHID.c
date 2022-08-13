@@ -44,7 +44,7 @@ typedef struct {
 typedef struct {
     uint8_t modifier;
     uint8_t reserved;
-    uint8_t keycode[sizeof(button_pins) + 2];
+    uint8_t keycode[NUM_BUTTONS + 2];
 } input_data_struct_keyboard;
 
 typedef struct {
@@ -226,7 +226,7 @@ void create_keyboard_report(input_data_struct_keyboard* input_data) {
     if (config->controller_mode == 1) {
         uint16_t button_status = get_button_state();
 
-        for (int i = 0; i < sizeof(button_pins); i++) {
+        for (int i = 0; i < NUM_BUTTONS; i++) {
             if (button_status & ((uint16_t)1 << i)) input_data->keycode[i] = 0x04 + i;
         }
     }
@@ -234,11 +234,11 @@ void create_keyboard_report(input_data_struct_keyboard* input_data) {
     if (config->tt_mode == 4) {
         switch (get_digital_encoder_state()) {
             case 1:
-                input_data->keycode[sizeof(button_pins)] = (0x03 + sizeof(button_pins)) + 1;
+                input_data->keycode[NUM_BUTTONS] = (0x03 + NUM_BUTTONS) + 1;
                 break;
 
             case 2:
-                input_data->keycode[sizeof(button_pins) + 1] = (0x03 + sizeof(button_pins)) + 2;
+                input_data->keycode[NUM_BUTTONS + 1] = (0x03 + NUM_BUTTONS) + 2;
                 break;
         }
     }

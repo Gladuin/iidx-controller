@@ -10,6 +10,16 @@
 
 #define AMOUNT 300
 
+// Set to 133 for 0.5ms (2kHz)   on a 16MHz processor: (16000000L / 64 / 2000  -> 133)
+// Set to 50  for 0.2ms (5kHz)   on a 16MHz processor: (16000000L / 64 / 5000  -> 50)
+// Set to 25  for 0.1ms (10kHz)  on a 16MHz processor: (16000000L / 64 / 10000 -> 25)
+// Set to 12  for 0.05ms (20kHz) on a 16MHz processor: (16000000L / 64 / 20833 -> 12)
+#if ENCODER_PPR < 360
+    #define INTERRUPT_PERIOD 25
+#else // High PPR encoders have the possibility to switch faster than the timer
+    #define INTERRUPT_PERIOD 12
+#endif
+
 
 volatile byte encoder_state_volatile;
 volatile int16_t encoder_value_volatile = 0;
@@ -27,11 +37,8 @@ void setup_timer_interrupt() {
     // Set compare match register (write to the high bit first)
     OCR3AH = 0;
 
-    // Set compare match register for particular frequency increments (cpu_clock_frequency / prescaler / desired_interrupt_frequency)
-    //  OCR3AL = 133; // = (16000000) / 64 / 2000  -> 133   This is  clock_frequency / prescaler / desired_frequency  ( 2 KHz, 0.5ms)
-    //  OCR3AL = 50;  // = (16000000) / 64 / 5000  ->  50   This is  clock_frequency / prescaler / desired_frequency  ( 5 KHz, 0.2ms)
-    //  OCR3AL = 25;  // = (16000000) / 64 / 10000 ->  25   This is  clock_frequency / prescaler / desired_frequency  (10 kHz, 0.1ms)
-    OCR3AL = 25;
+    // Set compare match register for particular frequency increments
+    OCR3AL = INTERRUPT_PERIOD;
 
     // Enable timer compare interrupt
     TIMSK3 = (1 << OCIE3A);

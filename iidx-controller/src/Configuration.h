@@ -16,6 +16,8 @@
 
     // Macros
     #define ADJUSTED_PPR ((int)((float)ENCODER_PPR * ((float)255 / (float)config->increments_per_full_turn)))
+    #define NUM_BUTTONS (sizeof(button_pins) / sizeof(uint8_t))
+    #define NUM_LEDS (sizeof(led_pins) / sizeof(uint8_t))
 
     #ifdef __cplusplus
         #define EXTERNC extern "C"

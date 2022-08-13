@@ -7,14 +7,14 @@
 #include "../Configuration.h"
 
 
-Bounce buttons[sizeof(button_pins)];
+Bounce buttons[NUM_BUTTONS];
 uint16_t button_status;
 
 static configuration_struct *config;
 
 
 void set_debounce_interval() {
-    for (int i = 0; i < sizeof(button_pins); i++) {
+    for (int i = 0; i < NUM_BUTTONS; i++) {
         buttons[i].interval(config->debounce_time);
     }
 }
@@ -22,7 +22,7 @@ void set_debounce_interval() {
 void initialise_buttons() {
     get_configuration(&config);
 
-    for (int i = 0; i < sizeof(button_pins); i++) {
+    for (int i = 0; i < NUM_BUTTONS; i++) {
         buttons[i] = Bounce();
         buttons[i].attach(button_pins[i], INPUT_PULLUP);
     }
@@ -31,7 +31,7 @@ void initialise_buttons() {
 }
 
 uint16_t get_button_state() {
-    for (int i = 0; i < sizeof(button_pins); i++) {
+    for (int i = 0; i < NUM_BUTTONS; i++) {
         buttons[i].update();
 
         switch (buttons[i].read()) {

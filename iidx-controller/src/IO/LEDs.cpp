@@ -7,21 +7,21 @@
 #include "LEDs.h"
 
 void initialise_leds() {
-    for (int i = 0; i < sizeof(led_pins); i++) {
+    for (int i = 0; i < NUM_LEDS; i++) {
         pinMode(led_pins[i], OUTPUT);
         digitalWrite(led_pins[i], HIGH);
     }
 
     delay(200);
 
-    for (int i = 0; i < sizeof(led_pins); i++) {
+    for (int i = 0; i < NUM_LEDS; i++) {
         digitalWrite(led_pins[i], LOW);
     }
 }
 
 void write_leds(uint16_t led_status, bool flipped) {
     if (flipped) {
-        led_status = led_status << (16 - sizeof(led_pins));
+        led_status = led_status << (16 - NUM_LEDS);
 
         // thanks http://graphics.stanford.edu/~seander/bithacks.html#ReverseByteWith32Bits
         // flip first half of led_status
@@ -36,7 +36,7 @@ void write_leds(uint16_t led_status, bool flipped) {
         led_status = (b << 8) | a;
     }
 
-    for (int i = 0; i < sizeof(led_pins); i++) {
+    for (int i = 0; i < NUM_LEDS; i++) {
         digitalWrite(led_pins[i], ((led_status >> i) & 1));
     }
 }
