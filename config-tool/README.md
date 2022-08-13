@@ -2,7 +2,7 @@
 Configure your arduino-based controller from the comfort of a gui!
 
 # Installing
-Get the latest zip from [here](https://github.com/Gladuin/iidx-controller/releases), extract, and run the exe. Simple as that!
+Get the latest release from [here](https://github.com/Gladuin/iidx-controller/releases), and run the exe. Simple as that!
 
 # What does what?
 | Option                 | Explanation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
