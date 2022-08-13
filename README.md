@@ -10,6 +10,15 @@ Software that enables you to create your own Arduino based beatmania IIDX contro
  - An Arduino Leonardo (technically compatible with any ATmega32U4 based board, but only tested with a Leonardo).
  - The [Bounce2](https://www.arduino.cc/reference/en/libraries/bounce2/) library.
 
+# Uploading the code
+Because this code uses LUFA, the process of uploading is a bit more different.
+1. Add `https://github.com/CrazyRedMachine/Arduino-Lufa/raw/master/package_arduino-lufa_index.json` as an Additional Board Manager URL (in `File -> Preferences` menu)
+2. Install LUFA AVR Boards from the Board Manager
+3. Select Arduino Leonardo (LUFA) as your board type
+4. Hit `Upload`
+
+NOTE: To upload new code, you need to press reset in the GUI or on your board when the IDE shows `PORTS {COM1, COM6, } / {COM1, COM6, } => {}` or something similar in the log. (to enable showing this, check `File -> Preferences -> Show verbose output during: -> Upload`)
+
 # Setup
 Buttons:
  - One terminal to GND and the other terminal to the corresponding pin.
