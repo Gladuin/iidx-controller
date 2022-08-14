@@ -44,6 +44,7 @@ enum string_descriptors_enum {
     STRING_ID_Language     = 0, // Supported Languages string descriptor ID (must be zero)
     STRING_ID_Manufacturer = 1, // Manufacturer string ID
     STRING_ID_Product      = 2, // Product string ID
+    STRING_ID_LEDs         = 3
 };
 
 static configuration_struct *config;
@@ -94,6 +95,8 @@ USB_Descriptor_HIDReport_Datatype_t joystick_report[] = {
         HID_RI_REPORT_SIZE(8, 1),
         HID_RI_REPORT_COUNT(8, NUM_LEDS),
         HID_RI_COLLECTION(8, 2),
+            0x89, STRING_ID_LEDs,
+            0x99, STRING_ID_LEDs + NUM_LEDS,
             HID_RI_USAGE(8, 11),
             HID_RI_USAGE(8, 10),
             HID_RI_USAGE(8, 9),
@@ -328,6 +331,33 @@ const USB_Descriptor_String_t PROGMEM language_string = USB_STRING_DESCRIPTOR_AR
 const USB_Descriptor_String_t PROGMEM manufacturer_string = USB_STRING_DESCRIPTOR(MF_NAME);
 const USB_Descriptor_String_t PROGMEM product_string = USB_STRING_DESCRIPTOR(L"IIDX Controller");
 
+const USB_Descriptor_String_t PROGMEM
+    LEDString_00 = USB_STRING_DESCRIPTOR(L"Button 1"),
+    LEDString_01 = USB_STRING_DESCRIPTOR(L"Button 2"),
+    LEDString_02 = USB_STRING_DESCRIPTOR(L"Button 3"),
+    LEDString_03 = USB_STRING_DESCRIPTOR(L"Button 4"),
+    LEDString_04 = USB_STRING_DESCRIPTOR(L"Button 5"),
+    LEDString_05 = USB_STRING_DESCRIPTOR(L"Button 6"),
+    LEDString_06 = USB_STRING_DESCRIPTOR(L"Button 7"),
+    LEDString_07 = USB_STRING_DESCRIPTOR(L"Misc button 1"),
+    LEDString_08 = USB_STRING_DESCRIPTOR(L"Misc button 2"),
+    LEDString_09 = USB_STRING_DESCRIPTOR(L"Misc button 3"),
+    LEDString_10 = USB_STRING_DESCRIPTOR(L"Misc button 4");
+
+const USB_Descriptor_String_t *LED_strings[] = {
+    &LEDString_00,
+    &LEDString_01,
+    &LEDString_02,
+    &LEDString_03,
+    &LEDString_04,
+    &LEDString_05,
+    &LEDString_06,
+    &LEDString_07,
+    &LEDString_08,
+    &LEDString_09,
+    &LEDString_10
+};
+
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
                                     const void** const descriptor_address
@@ -390,6 +420,11 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                     address = &product_string;
                     size    = pgm_read_byte(&product_string.Header.Size);
                     break;
+                default:
+                    if (descriptor_number >= STRING_ID_LEDs && descriptor_number < (STRING_ID_LEDs + NUM_LEDS)) {
+                        address = LED_strings[descriptor_number - STRING_ID_LEDs];
+                        size    = pgm_read_byte(&(LED_strings[descriptor_number - STRING_ID_LEDs]->Header.Size));
+                    }
             }
             break;
         case HID_DTYPE_HID:
