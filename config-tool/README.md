@@ -2,7 +2,7 @@
 Configure your arduino-based controller from the comfort of a gui!
 
 # Installing
-Get the latest zip from [insert releases url here], extract, and run the exe. Simple as that!
+Get the latest release from [here](https://github.com/Gladuin/iidx-controller/releases), and run the exe. Simple as that!
 
 # What does what?
 | Option                 | Explanation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -20,7 +20,7 @@ Get the latest zip from [insert releases url here], extract, and run the exe. Si
 # Building
 I used python 3.10 to create this, so it definitely works with that version. YMMV with other versions.
 
-0. (Optional) Create a python VENV and activate it. (https://docs.python.org/3/library/venv.html)[See here how]
+0. (Optional) Create a python VENV and activate it. [See here how](https://docs.python.org/3/library/venv.html)
 1. Install the required packages by running `pip install -r requirements.txt`
-2. Build the executable by running `pyinstaller --onefile --noconsole controller-config.py`
+2. Build the executable by running `pyinstaller --onefile --noconsole config-tool.py`
 3. Done.
