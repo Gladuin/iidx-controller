@@ -39,7 +39,23 @@
     /* OPTIONS */
     // Your encoder pulses per rotation
     #define ENCODER_PPR 600
+    
+    // Spoof the konami premium controller (UM/Infinitas compatibility)
+    #define KONAMI_SPOOF 1
+    
+    #if KONAMI_SPOOF == 0
+    // The desired VID and PID for this controller
+        #define VID 0x0001
+        #define PID 0x0001
+    // The desired manufacturer and product name of this controller (leave the L in front of the ")
+        #define MF_NAME L"username"
+        #define PROD_NAME L"IIDX Controller"
+    #else
+    // These values should not be modified as they are required for the konami spoof mode
+        #define VID 0x1ccf
+        #define PID 0x8086
+        #define MF_NAME L"Konami Amusement"
+        #define PROD_NAME L"beatmania IIDX controller premium model"  
+    #endif
 
-    // The manufacturer name of this controller (leave the L in front of the ")
-    #define MF_NAME L"username"
 #endif
