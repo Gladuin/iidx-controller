@@ -82,7 +82,7 @@ USB_Descriptor_HIDReport_Datatype_t joystick_report[] = {
         HID_RI_REPORT_SIZE(8, 16),
         HID_RI_REPORT_COUNT(8, 1),
         HID_RI_COLLECTION(8, 0),
-            HID_RI_USAGE(8, 49),
+            HID_RI_USAGE(8, 48),
             HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
         HID_RI_END_COLLECTION(0),
 
