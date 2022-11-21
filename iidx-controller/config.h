@@ -33,13 +33,31 @@
     };
 
     // Pins where the encoder is connected to
-    static const uint8_t encoder_pin0 = 0;  // green wire (a phase)
-    static const uint8_t encoder_pin1 = 1;  // white wire (b phase)
+    #define ENCODER_PIN_A 0 // green wire (a phase)
+    #define ENCODER_PIN_B 1 // white wire (b phase)
 
     /* OPTIONS */
     // Your encoder pulses per rotation
     #define ENCODER_PPR 600
-
+    
+    // Spoof the konami premium controller (UM/Infinitas compatibility)
+    #define KONAMI_SPOOF 1
+    
+    #if KONAMI_SPOOF == 0
+        #define VID 0x0001
+        #define PID 0x0001
     // The manufacturer name of this controller (leave the L in front of the ")
-    #define MF_NAME L"username"
+        #define MF_NAME L"username"
+        #define PROD_NAME L"IIDX Controller"
+        static const uint8_t encoder_pin0 = ENCODER_PIN_A;
+        static const uint8_t encoder_pin1 = ENCODER_PIN_B;
+    #else
+        #define VID 0x1ccf
+        #define PID 0x8086
+        #define MF_NAME L"Konami Amusement"
+        #define PROD_NAME L"beatmania IIDX controller premium model"
+        static const uint8_t encoder_pin0 = ENCODER_PIN_B;
+        static const uint8_t encoder_pin1 = ENCODER_PIN_A;  
+    #endif
+
 #endif

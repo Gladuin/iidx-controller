@@ -9,6 +9,9 @@ from pywinusb import hid
 
 def get_filtered_devices():
     filter = hid.HidDeviceFilter(vendor_id = 0x0001, product_id = 0x0001)
+    # might be in konami spoof mode
+    if len(filter.get_devices()) == 0:
+        filter = hid.HidDeviceFilter(vendor_id = 0x1ccf, product_id = 0x8086)
     return filter.get_devices()
 
 def send(data):

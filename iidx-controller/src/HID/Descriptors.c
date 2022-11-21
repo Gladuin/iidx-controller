@@ -82,7 +82,7 @@ USB_Descriptor_HIDReport_Datatype_t joystick_report[] = {
         HID_RI_REPORT_SIZE(8, 16),
         HID_RI_REPORT_COUNT(8, 1),
         HID_RI_COLLECTION(8, 0),
-            HID_RI_USAGE(8, 49),
+            HID_RI_USAGE(8, 48),
             HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
         HID_RI_END_COLLECTION(0),
 
@@ -186,8 +186,8 @@ const USB_Descriptor_Device_t PROGMEM device_descriptor = {
 
     .Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
 
-    .VendorID               = 0x0001,
-    .ProductID              = 0x0001,
+    .VendorID               = VID,
+    .ProductID              = PID,
     .ReleaseNumber          = VERSION_BCD(0,0,1),
 
     .ManufacturerStrIndex   = STRING_ID_Manufacturer,
@@ -329,7 +329,7 @@ USB_descriptor_configuration_struct configuration_descriptor = {
 
 const USB_Descriptor_String_t PROGMEM language_string = USB_STRING_DESCRIPTOR_ARRAY(LANGUAGE_ID_ENG);
 const USB_Descriptor_String_t PROGMEM manufacturer_string = USB_STRING_DESCRIPTOR(MF_NAME);
-const USB_Descriptor_String_t PROGMEM product_string = USB_STRING_DESCRIPTOR(L"IIDX Controller");
+const USB_Descriptor_String_t PROGMEM product_string = USB_STRING_DESCRIPTOR(PROD_NAME);
 
 const USB_Descriptor_String_t PROGMEM
     LEDString_00 = USB_STRING_DESCRIPTOR(L"Button 1"),
