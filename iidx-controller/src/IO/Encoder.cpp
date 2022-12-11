@@ -20,9 +20,13 @@
     #define INTERRUPT_PERIOD 12
 #endif
 
+#define LIMIT(min,val,max) if (val >= max) { val -= max; } else if (val < min) { val += max; }
 
 volatile byte encoder_state_volatile;
-volatile int16_t encoder_value_volatile = 0;
+volatile int16_t encoder_value_volatile = 0;    // Count from 0 to (ENCODER_PPR - 1)
+volatile int16_t encoder_virtual_volatile = 0;  // Count from 0 to 255
+volatile int16_t encoder_virtual_raw_volatile = 0;
+volatile int16_t encoder_virtual_old_volatile = 0;
 
 int digital_rotation = 0;
 
@@ -81,13 +85,23 @@ uint8_t get_digital_encoder_state() {
 }
 
 uint16_t get_encoder_state() {
-    if (encoder_value_volatile >= ADJUSTED_PPR) {
-        encoder_value_volatile = 0;
-    } else if (encoder_value_volatile < 0) {
-        encoder_value_volatile = ADJUSTED_PPR - 1;
-    }
+    LIMIT(0, encoder_value_volatile, ENCODER_PPR)
 
-    return encoder_value_volatile;
+    return (uint16_t)((float)encoder_value_volatile * PPR_SCALE);
+}
+
+uint16_t get_encoder_virtual_state() {
+    encoder_virtual_raw_volatile = (int16_t)((float)encoder_value_volatile * INCREMENT_SCALE);
+    if (encoder_virtual_raw_volatile < encoder_virtual_old_volatile) {
+        encoder_virtual_volatile--;
+    } else if (encoder_virtual_raw_volatile > encoder_virtual_old_volatile) {
+        encoder_virtual_volatile++;
+    }
+    LIMIT(0, encoder_value_volatile, ENCODER_PPR)
+    encoder_virtual_old_volatile = encoder_virtual_raw_volatile;
+    LIMIT(0, encoder_virtual_raw_volatile, 255)
+    LIMIT(0, encoder_virtual_volatile, 255)
+    return encoder_virtual_volatile;
 }
 
 void compute_encoder() {

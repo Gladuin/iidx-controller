@@ -374,8 +374,8 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
     uint16_t    size    = NO_DESCRIPTOR;
 
     // adjust logical maximum of encoder
-    joystick_report[41] = ADJUSTED_PPR & 0xFF;
-    joystick_report[42] = ADJUSTED_PPR >> 8;
+    joystick_report[41] = 0xFF;
+    joystick_report[42] = 0;
 
     // adjust min max of mouse report
     mouse_report[17] = (-ENCODER_PPR / 2) & 0xFF;

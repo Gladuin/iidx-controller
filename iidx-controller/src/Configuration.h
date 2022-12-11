@@ -15,7 +15,8 @@
     } configuration_struct;
 
     // Macros
-    #define ADJUSTED_PPR ((int)((float)ENCODER_PPR * ((float)255 / (float)config->increments_per_full_turn)))
+    #define PPR_SCALE (255.0f / (float)ENCODER_PPR)
+    #define INCREMENT_SCALE ((float)config->increments_per_full_turn / (float)ENCODER_PPR)
     #define NUM_BUTTONS (sizeof(button_pins) / sizeof(uint8_t))
     #define NUM_LEDS (sizeof(led_pins) / sizeof(uint8_t))
 
