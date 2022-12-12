@@ -53,7 +53,7 @@
         static const uint8_t encoder_pin1 = ENCODER_PIN_B;
     #else
         #define VID 0x1ccf
-        #define PID 0x8086
+        #define PID 0x8048
         #define MF_NAME L"Konami Amusement"
         #define PROD_NAME L"beatmania IIDX controller premium model"
         static const uint8_t encoder_pin0 = ENCODER_PIN_B;
