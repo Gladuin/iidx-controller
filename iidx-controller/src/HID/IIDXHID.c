@@ -201,11 +201,15 @@ void create_joystick_report(input_data_struct_joystick* input_data) {
     }
 
     if (config->tt_mode == 0) {
-        input_data->turntable_position = get_encoder_state();
+        if (config->increments_per_full_turn == 255) {
+            input_data->turntable_position = get_encoder_state();
+        } else {
+            input_data->turntable_position = get_encoder_virtual_state();
+        }
     } else if ((config->tt_mode == 2) || (config->tt_mode == 3)) {
         switch (get_digital_encoder_state()) {
             case 1:
-                if (config->tt_mode == 2) input_data->turntable_position = ADJUSTED_PPR;
+                if (config->tt_mode == 2) input_data->turntable_position = 0xFF;
                 if (config->tt_mode == 3) input_data->button_status = input_data->button_status | 0b0000100000000000;
                 break;
 
@@ -215,7 +219,7 @@ void create_joystick_report(input_data_struct_joystick* input_data) {
                 break;
 
             default:
-                if (config->tt_mode == 2) input_data->turntable_position = ADJUSTED_PPR / 2;
+                if (config->tt_mode == 2) input_data->turntable_position = 0xFF / 2;
         }
     }
 }
